@@ -1,0 +1,1 @@
+# KindPath Analyser core modules
