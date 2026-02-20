@@ -1,0 +1,23 @@
+# KindPath Creative Analyser - Dependencies
+
+# Core audio analysis
+librosa>=0.10.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Stem separation (GPU recommended but not required)
+# demucs>=4.0.0
+# Install separately: pip install demucs
+# Without it, the tool works on the mixed signal; stem separation is modular
+
+# Visualisation (optional but recommended)
+plotly>=5.0.0
+
+# For advanced LUFS measurement (optional)
+# pyloudnorm>=0.1.0
+
+# For DAW plugin fingerprinting (future module)
+# tensorflow>=2.12.0  # For trained classifier models
+
+# Standard library only beyond this point
+# json, os, sys, dataclasses, typing - all built in
