@@ -32,6 +32,8 @@ class Segment:
     end_sample: int
     y: np.ndarray           # audio data for this segment
     duration: float         # seconds
+    sample_rate: int = 44100  # carried from the source record for downstream use
+    sample_rate: int = 0    # Hz — carried from the parent AudioRecord
 
 
 @dataclass  
@@ -81,6 +83,7 @@ def _segment_quarters(y: np.ndarray, sr: int, duration: float) -> List[Segment]:
             end_sample=end_s,
             y=y[start_s:end_s],
             duration=quarter_dur,
+            sample_rate=sr,
         ))
 
     return quarters
@@ -91,19 +94,21 @@ def _segment_structural(y: np.ndarray, sr: int, duration: float) -> List[Segment
     Detect section boundaries using spectral novelty / energy flux.
     This finds where the music actually changes, not where the clock ticks.
     """
-    # Compute onset strength envelope
-    hop_length = 512
-    oenv = librosa.onset.onset_strength(y=y, sr=sr, hop_length=hop_length)
+    # Downsample for structural analysis — structure exists at low resolution;
+    # working at 11025Hz is 4x faster than 44100Hz with no loss of section data.
+    sr_analysis = 11025
+    y_analysis = librosa.resample(y, orig_sr=sr, target_sr=sr_analysis) if sr != sr_analysis else y
+    hop_length = 256
 
-    # Compute recurrence matrix for structure detection
-    # Uses chroma features to find repeated sections
-    chroma = librosa.feature.chroma_cqt(y=y, sr=sr, hop_length=hop_length)
+    # Chroma STFT is ~10x faster than chroma_cqt for structural purposes;
+    # equal-temperament grid alignment is sufficient here.
+    chroma = librosa.feature.chroma_stft(y=y_analysis, sr=sr_analysis, hop_length=hop_length)
     R = librosa.segment.recurrence_matrix(chroma, mode='affinity', sym=True)
     R_filtered = librosa.segment.path_enhance(R, 15)
 
     # Detect boundaries
     bounds = librosa.segment.agglomerative(R_filtered, k=min(8, max(2, int(duration / 30))))
-    bound_times = librosa.frames_to_time(bounds, sr=sr, hop_length=hop_length)
+    bound_times = librosa.frames_to_time(bounds, sr=sr_analysis, hop_length=hop_length)
 
     # Build segments from boundaries
     all_times = np.concatenate([[0], bound_times, [duration]])
@@ -129,6 +134,7 @@ def _segment_structural(y: np.ndarray, sr: int, duration: float) -> List[Segment
             end_sample=end_s,
             y=y[start_s:end_s],
             duration=end_t - start_t,
+            sample_rate=sr,
         ))
 
     return segments
@@ -156,6 +162,7 @@ def _segment_micro(y: np.ndarray, sr: int, window_seconds: float) -> List[Segmen
             end_sample=idx + window_samples,
             y=y[idx:idx + window_samples],
             duration=window_seconds,
+            sample_rate=sr,
         ))
         idx += window_samples
         window_num += 1
