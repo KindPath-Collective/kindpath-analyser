@@ -1,5 +1,16 @@
 # KindPath Creative Analyser — Code Agent Build Instructions
 
+## Session Init Protocol
+
+Before reading code or making changes, run:
+```bash
+cat ~/.kindpath/HANDOVER.md
+python3 ~/.kindpath/kp_memory.py dump --domain gotcha
+python3 ~/.kindpath/kp_memory.py dump
+```
+
+---
+
 ## Mission
 
 You are building the KindPath Creative Analyser: a frequency field scientist and
