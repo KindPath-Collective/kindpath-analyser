@@ -100,13 +100,57 @@ def analyse_file(filepath: str, full_provenance: bool = False,
     if fingerprints.manufacturing_markers:
         print(f"  ⚠ Manufacture: {'; '.join(fingerprints.manufacturing_markers)}")
 
+    # Pull solfeggio_alignment from the first quarter's feature set.
+    # feature_extractor.py calls compute_solfeggio_alignment internally,
+    # so this is always available when features were extracted successfully.
+    solfeggio_alignment = None
+    if quarter_features and hasattr(quarter_features[0], 'solfeggio_alignment'):
+        solfeggio_alignment = quarter_features[0].solfeggio_alignment
+
     # ── STAGE 6: PSYCHOSOMATIC PROFILE ──────────────────────────
+    psycho = build_psychosomatic_profile(
+        trajectory=trajectory,
+        fingerprints=fingerprints,
+        solfeggio_alignment=solfeggio_alignment,
+    )
+
     print(f"\n[PSYCHOSOMATIC PROFILE]")
     print(f"  Valence Arc  : {' → '.join([f'{v:.2f}' for v in trajectory.valence_arc])}")
     print(f"  Energy Arc   : {' → '.join([f'{v:.2f}' for v in trajectory.energy_arc])}")
     print(f"  Complexity   : {' → '.join([f'{v:.2f}' for v in trajectory.complexity_arc])}")
     print(f"  Tension Arc  : {' → '.join([f'{v:.2f}' for v in trajectory.tension_arc])}")
     print(f"  Coherence    : {' → '.join([f'{v:.2f}' for v in trajectory.coherence_arc])}")
+    print(f"  Authentic    : {psycho.authentic_emission_score:.2f}  "
+          f"Manufactured: {psycho.manufacturing_score:.2f}  "
+          f"Residue: {psycho.creative_residue:.2f}")
+    if psycho.stage1_priming_detected:
+        print(f"  ⚠ Stage 1 Priming Detected")
+    if psycho.stage2_prestige_attached:
+        print(f"  ⚠ Stage 2 Prestige Attached")
+
+    print(f"\n[ELDER'S READING]")
+    # Wrap at 72 chars for terminal readability
+    elder_text = psycho.elder_reading
+    for i in range(0, len(elder_text), 72):
+        print(f"  {elder_text[i:i+72]}")
+
+    # ── STAGE 7: INFLUENCE CHAIN ─────────────────────────────────
+    print(f"\n[INFLUENCE CHAIN]")
+    influence_chain = map_influence_chain(
+        fingerprints=fingerprints,
+        features=quarter_features[0] if quarter_features else None,
+        manufacturing_score=psycho.manufacturing_score,
+        authentic_emission_score=psycho.authentic_emission_score,
+        lsii_score=lsii.lsii,
+    )
+    if influence_chain.primary_lineage:
+        for node in influence_chain.primary_lineage[:2]:
+            print(f"  {node.name} ({node.era_range[0]}–{node.era_range[1]}) "
+                  f"conf={node.confidence:.2f}")
+    print(f"  Mechanic Dir : {influence_chain.mechanic_direction}")
+    print(f"  Stage Est.   : {influence_chain.gradient_stage_estimate}")
+    if influence_chain.syntropy_repair_vectors:
+        print(f"  Repair Vector: {influence_chain.syntropy_repair_vectors[0][:60]}")
 
     # ── ASSEMBLE PROFILE ─────────────────────────────────────────
     profile = {
@@ -176,6 +220,15 @@ def analyse_file(filepath: str, full_provenance: bool = False,
             "elder_reading": psycho.elder_reading,
             "predicted_physical_responses": psycho.predicted_physical_responses,
             "predicted_emotional_states": psycho.predicted_emotional_states,
+            "solfeggio_alignment": {
+                "vocal_fundamental_deviation_hz": round(psycho.solfeggio_alignment.vocal_fundamental_deviation_hz, 2),
+                "solfeggio_grid_proximity": round(psycho.solfeggio_alignment.solfeggio_grid_proximity, 4),
+                "nearest_solfeggio_name": psycho.solfeggio_alignment.nearest_solfeggio_name,
+                "nearest_solfeggio_hz": psycho.solfeggio_alignment.nearest_solfeggio_hz,
+                "institutional_distance": round(psycho.solfeggio_alignment.institutional_distance, 4),
+                "tuning_deviation_cents": round(psycho.solfeggio_alignment.tuning_deviation_cents, 2),
+                "alignment_reading": psycho.solfeggio_alignment.alignment_reading,
+            } if psycho.solfeggio_alignment else None,
         },
         "influence_chain": {
             "primary_lineage": [
