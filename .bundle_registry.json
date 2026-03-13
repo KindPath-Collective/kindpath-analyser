@@ -1,0 +1,162 @@
+{
+  "kindlife": {
+    "id": "kindlife",
+    "name": "KindLife",
+    "description": "Full everyday life suite. All modules active. The complete KindPath experience for someone managing all aspects of their life.",
+    "modules": [
+      "kindai",
+      "kindhealth",
+      "kindhome",
+      "kindwork",
+      "kindbiz",
+      "kindcreate",
+      "kindsocials",
+      "kindstudy"
+    ],
+    "doctrineOverlay": "kindlife",
+    "tags": [
+      "everyday-life",
+      "full-suite"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-03-13T09:16:15.431Z",
+    "updatedAt": "2026-03-13T09:16:15.431Z"
+  },
+  "kindpractice": {
+    "id": "kindpractice",
+    "name": "KindPractice",
+    "description": "Practitioner bundle. NDIS compliance, participant care, field analysis, and KindAI documentation support. For allied health and support workers.",
+    "modules": [
+      "kindai",
+      "kindis",
+      "kindcare",
+      "kindpath-research",
+      "kindhealth"
+    ],
+    "doctrineOverlay": "kindpractice",
+    "tags": [
+      "practitioner",
+      "ndis",
+      "allied-health"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-03-13T09:16:15.431Z",
+    "updatedAt": "2026-03-13T09:16:15.431Z"
+  },
+  "creator": {
+    "id": "creator",
+    "name": "Creator Bundle",
+    "description": "Creative focus. KindCreate as primary workspace with optional sharing, audience strategy, and field analysis. KindHealth on to protect energy.",
+    "modules": [
+      "kindai",
+      "kindcreate",
+      "kindsocials",
+      "kindfluence",
+      "kindpath-research",
+      "kindhealth"
+    ],
+    "doctrineOverlay": "creator",
+    "moduleConfig": {
+      "kindsocials": {
+        "socialMonitorDefault": false
+      }
+    },
+    "tags": [
+      "creator",
+      "creative"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-03-13T09:16:15.431Z",
+    "updatedAt": "2026-03-13T09:16:15.431Z"
+  },
+  "student": {
+    "id": "student",
+    "name": "Student Bundle",
+    "description": "Study support. KindStudy primary with KindAI tutor, KindHealth for energy/sleep tracking, KindCreate for expression and release.",
+    "modules": [
+      "kindai",
+      "kindstudy",
+      "kindhealth",
+      "kindcreate"
+    ],
+    "doctrineOverlay": "academic-support",
+    "moduleConfig": {
+      "kindsocials": {
+        "enabled": false
+      },
+      "kindwork": {
+        "enabled": false
+      }
+    },
+    "tags": [
+      "student",
+      "education"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-03-13T09:16:15.431Z",
+    "updatedAt": "2026-03-13T09:16:15.431Z"
+  },
+  "financial-reset": {
+    "id": "financial-reset",
+    "name": "Financial Reset",
+    "description": "Acute financial stress support. Home, work, and biz modules active with gentle financial-stress doctrine. Socials off to reduce comparison pressure.",
+    "modules": [
+      "kindai",
+      "kindhome",
+      "kindwork",
+      "kindbiz",
+      "kindhealth"
+    ],
+    "doctrineOverlay": "financial-stress",
+    "moduleConfig": {
+      "kindsocials": {
+        "enabled": false
+      },
+      "kindcreate": {
+        "enabled": false
+      },
+      "kindstudy": {
+        "enabled": false
+      }
+    },
+    "tags": [
+      "wellbeing",
+      "financial"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-03-13T09:16:15.431Z",
+    "updatedAt": "2026-03-13T09:16:15.431Z"
+  },
+  "social-bridge": {
+    "id": "social-bridge",
+    "name": "Social Bridge",
+    "description": "Isolation and social confidence support. Socials + Create + Care with KindAI providing connection-support doctrine.",
+    "modules": [
+      "kindai",
+      "kindsocials",
+      "kindcreate",
+      "kindcare",
+      "kindhealth"
+    ],
+    "doctrineOverlay": "connection-support",
+    "moduleConfig": {
+      "kindsocials": {
+        "socialMonitorDefault": true
+      },
+      "kindwork": {
+        "enabled": false
+      },
+      "kindbiz": {
+        "enabled": false
+      }
+    },
+    "tags": [
+      "wellbeing",
+      "social",
+      "connection"
+    ],
+    "isSystem": true,
+    "createdAt": "2026-03-13T09:16:15.431Z",
+    "updatedAt": "2026-03-13T09:16:15.431Z"
+  }
+}

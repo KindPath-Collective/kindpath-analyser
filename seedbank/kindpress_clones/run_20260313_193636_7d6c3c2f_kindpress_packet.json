@@ -1,0 +1,27 @@
+{
+  "record_id": "run_20260313_193636_7d6c3c2f",
+  "k_version": "kindpath:runtime:v1",
+  "delta": {
+    "lsii_score": 0.5290219911199154,
+    "lsii_flag_level": "moderate",
+    "authentic_emission_score": 0.821900187964268,
+    "manufacturing_score": 0.3,
+    "creative_residue": 0.0387759862590748,
+    "era_fingerprint": "2000s",
+    "key_estimate": "unknown",
+    "genre_estimate": "unknown",
+    "tags": [
+      "runtime",
+      "nanomap"
+    ],
+    "verified": false,
+    "release_circumstances": "runtime_capture",
+    "duration_seconds": 60.0,
+    "__extra__": {
+      "profile_sha256": "3fd6b931fe1a13e4485d6ada06b2213f2f70fdc6d312a64769776129de0a2cd2"
+    }
+  },
+  "compressed_at": "2026-03-13T08:37:08.560547+00:00",
+  "packet_hash": "ff62acdbeb3079e30f9760dd76fbdd78d4e2e7e466c55536e1bcfcf9e9bc3bc4",
+  "source_filename": "lsii_test.wav"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "run_20260313_194954_a8bbd066:warning:1",
+  "deposited_at": "2026-03-13T08:50:36.518339+00:00",
+  "filename": "fingerprints.py",
+  "context": "runtime_warning_capture",
+  "baseline_version": "kindpath:warning:v1",
+  "release_circumstances": "analysis_runtime",
+  "creator_statement": null,
+  "duration_seconds": 0.0,
+  "lsii_score": 0.0,
+  "lsii_flag_level": "none",
+  "authentic_emission_score": 0.0,
+  "manufacturing_score": 0.0,
+  "creative_residue": 0.0,
+  "era_fingerprint": "runtime",
+  "key_estimate": "unknown",
+  "tempo_bpm": 0.0,
+  "genre_estimate": "runtime-warning",
+  "tags": [
+    "warning",
+    "nanomap",
+    "complexwarning"
+  ],
+  "verified": false,
+  "warning_message": "Casting complex values to real discards the imaginary part",
+  "warning_category": "ComplexWarning",
+  "warning_source_file": "/Users/sam/dev/KindPath-Collective/kindpath-analyser/core/fingerprints.py",
+  "warning_source_line": 381,
+  "warning_module": "fingerprints.py"
+}

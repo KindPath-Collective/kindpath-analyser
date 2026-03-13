@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: kindpath-analyser
+Version: 0.1.0
+Summary: KindPath Creative Analyser — frequency field analysis and seedbank
+Requires-Python: >=3.10
+License-File: LICENSE
+Requires-Dist: librosa>=0.10
+Requires-Dist: numpy>=1.24
+Requires-Dist: scipy>=1.11
+Requires-Dist: soundfile>=0.12
+Requires-Dist: matplotlib>=3.7
+Dynamic: license-file

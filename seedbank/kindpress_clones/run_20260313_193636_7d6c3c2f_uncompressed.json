@@ -1,0 +1,25 @@
+{
+  "id": "run_20260313_193636_7d6c3c2f",
+  "deposited_at": "2026-03-13T08:37:08.559918+00:00",
+  "filename": "lsii_test.wav",
+  "context": "runtime_analysis",
+  "baseline_version": "kindpath:runtime:v1",
+  "release_circumstances": "runtime_capture",
+  "creator_statement": null,
+  "duration_seconds": 60.0,
+  "lsii_score": 0.5290219911199154,
+  "lsii_flag_level": "moderate",
+  "authentic_emission_score": 0.821900187964268,
+  "manufacturing_score": 0.3,
+  "creative_residue": 0.0387759862590748,
+  "era_fingerprint": "2000s",
+  "key_estimate": "unknown",
+  "tempo_bpm": null,
+  "genre_estimate": "unknown",
+  "tags": [
+    "runtime",
+    "nanomap"
+  ],
+  "verified": false,
+  "profile_sha256": "3fd6b931fe1a13e4485d6ada06b2213f2f70fdc6d312a64769776129de0a2cd2"
+}
