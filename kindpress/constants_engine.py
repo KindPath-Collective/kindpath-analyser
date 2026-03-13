@@ -62,6 +62,19 @@ STOPWORDS = {
     "true", "false", "none", "null", "json", "dict", "list", "data", "value", "record", "records",
     "file", "files", "path", "paths", "output", "input", "result", "results", "test", "tests",
     "python", "module", "class", "function", "return", "import", "raise", "error", "status",
+    "description", "version", "optional", "generated", "default", "command", "commands",
+    "output_dir", "source", "sources", "project", "projects", "workspace", "workspaces",
+    "config", "configs", "metadata", "summary", "details", "notes", "example", "examples",
+}
+
+
+CATEGORY_WEIGHT = {
+    "kindpath_namespace": 1.20,
+    "constant_identifier": 1.15,
+    "identity_key": 1.10,
+    "snake_term": 1.05,
+    "tag_or_slug": 1.00,
+    "general_token": 0.75,
 }
 
 
@@ -153,16 +166,161 @@ def _classify_token(token: str) -> str:
     return "general_token"
 
 
-def _is_signal_token(token: str) -> bool:
+def _normalise_token(token: str, category: str) -> str:
+    """Normalise token identity while preserving semantically significant constants."""
+    if category == "constant_identifier":
+        return token
+    return token.lower()
+
+
+def _is_signal_token(token: str, category: str) -> bool:
     lower = token.lower()
     if lower in STOPWORDS:
         return False
 
+    if token.isdigit():
+        return False
+
+    if token.startswith("http"):
+        return False
+
     # Plain natural-language words with no structure are weak constants.
-    if token.islower() and "_" not in token and "-" not in token and len(token) < 6:
+    if category == "general_token" and "_" not in token and "-" not in token and len(token) < 5:
         return False
 
     return True
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        while True:
+            chunk = fh.read(1024 * 1024)
+            if not chunk:
+                break
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _read_last_chain_hash(path: Path) -> str:
+    if not path.exists():
+        return "genesis"
+
+    try:
+        with open(path, "rb") as fh:
+            fh.seek(0, os.SEEK_END)
+            size = fh.tell()
+            if size == 0:
+                return "genesis"
+
+            pos = size - 1
+            while pos > 0:
+                fh.seek(pos)
+                char = fh.read(1)
+                if char == b"\n" and pos < size - 1:
+                    break
+                pos -= 1
+            if pos == 0:
+                fh.seek(0)
+
+            last = fh.read().strip()
+            if not last:
+                return "genesis"
+            event = json.loads(last)
+            return event.get("chain_hash", "genesis")
+    except Exception:
+        return "genesis"
+
+
+def _append_provenance_event(snapshot: ConstantsSnapshot,
+                             output_dir: Path,
+                             latest_path: Path,
+                             snapshot_path: Path,
+                             history_path: Path) -> dict:
+    """Append a hash-chained provenance event for this constants snapshot."""
+    ledger_path = output_dir / "constants.provenance.jsonl"
+
+    event = {
+        "timestamp": _now_iso(),
+        "event_type": "constants_snapshot_written",
+        "snapshot_id": snapshot.snapshot_id,
+        "generated_at": snapshot.generated_at,
+        "constants_key_fingerprint": snapshot.constants_key_fingerprint,
+        "roots": snapshot.roots,
+        "laws": snapshot.laws,
+        "artifacts": {
+            "latest": {
+                "path": str(latest_path),
+                "sha256": _sha256_file(latest_path),
+                "size_bytes": latest_path.stat().st_size,
+            },
+            "snapshot": {
+                "path": str(snapshot_path),
+                "sha256": _sha256_file(snapshot_path),
+                "size_bytes": snapshot_path.stat().st_size,
+            },
+            "history": {
+                "path": str(history_path),
+                "sha256": _sha256_file(history_path),
+                "size_bytes": history_path.stat().st_size,
+            },
+        },
+    }
+
+    prior_hash = _read_last_chain_hash(ledger_path)
+    event_json = json.dumps(event, separators=(",", ":"), sort_keys=True)
+    chain_input = (prior_hash + event_json).encode("utf-8")
+    chain_hash = hashlib.sha256(chain_input).hexdigest()
+    event["chain_hash"] = chain_hash
+
+    with open(ledger_path, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(event, separators=(",", ":"), sort_keys=True) + "\n")
+
+    return {
+        "path": str(ledger_path),
+        "chain_hash": chain_hash,
+    }
+
+
+def verify_provenance_chain(path: Path) -> dict:
+    """Verify the constants provenance hash chain."""
+    if not path.exists():
+        return {"ok": True, "events_verified": 0, "broken_at_line": None, "error": None}
+
+    prior_hash = "genesis"
+    line_num = 0
+    with open(path, encoding="utf-8") as fh:
+        for raw_line in fh:
+            raw_line = raw_line.strip()
+            if not raw_line:
+                continue
+            line_num += 1
+
+            try:
+                event = json.loads(raw_line)
+            except json.JSONDecodeError as exc:
+                return {
+                    "ok": False,
+                    "events_verified": line_num - 1,
+                    "broken_at_line": line_num,
+                    "error": f"JSON parse error: {exc}",
+                }
+
+            stored_hash = event.get("chain_hash", "")
+            event_for_chain = {k: v for k, v in event.items() if k != "chain_hash"}
+            event_json = json.dumps(event_for_chain, separators=(",", ":"), sort_keys=True)
+            expected = hashlib.sha256((prior_hash + event_json).encode("utf-8")).hexdigest()
+            if stored_hash != expected:
+                return {
+                    "ok": False,
+                    "events_verified": line_num - 1,
+                    "broken_at_line": line_num,
+                    "error": f"Chain break at line {line_num}",
+                }
+
+            prior_hash = stored_hash
+
+    return {"ok": True, "events_verified": line_num, "broken_at_line": None, "error": None}
 
 
 def _extract_tokens_from_json_obj(obj, out: list[str]) -> None:
@@ -279,12 +437,14 @@ def scan_constants(config: ScanConfig,
             token = token.strip()
             if len(token) < 3:
                 continue
-            if not _is_signal_token(token):
+            category = _classify_token(token)
+            token = _normalise_token(token, category)
+            if not _is_signal_token(token, category):
                 continue
             token_occ[token] = token_occ.get(token, 0) + 1
             token_files.setdefault(token, set()).add(file_key)
             token_domains.setdefault(token, set()).add(domain)
-            token_categories.setdefault(token, set()).add(_classify_token(token))
+            token_categories.setdefault(token, set()).add(category)
 
     prev_scores: dict[str, float] = {}
     if previous_snapshot:
@@ -329,6 +489,8 @@ def scan_constants(config: ScanConfig,
                 + 0.25 * domain_coverage
                 + 0.15 * evolutionary_stability
             )
+            top_category = sorted(token_categories.get(token, {"general_token"}))[0]
+            rmoe *= CATEGORY_WEIGHT.get(top_category, 1.0)
             rmoe = max(0.0, min(1.0, rmoe))
 
             confidence = max(0.0, min(1.0, 0.6 * recurrence + 0.4 * support))
@@ -403,8 +565,12 @@ def save_snapshot(snapshot: ConstantsSnapshot, output_dir: Path) -> dict:
     with open(history, "a", encoding="utf-8") as fh:
         fh.write(json.dumps(payload, separators=(",", ":")) + "\n")
 
+    provenance = _append_provenance_event(snapshot, output_dir, latest, snap_path, history)
+
     return {
         "latest": str(latest),
         "snapshot": str(snap_path),
         "history": str(history),
+        "provenance": provenance["path"],
+        "provenance_chain_hash": provenance["chain_hash"],
     }

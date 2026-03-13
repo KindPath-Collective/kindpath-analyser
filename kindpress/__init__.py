@@ -98,6 +98,7 @@ from .constants_engine import (
     derive_constants_key_material,
     save_snapshot,
     scan_constants,
+    verify_provenance_chain,
 )
 
 __all__ = [
@@ -108,4 +109,5 @@ __all__ = [
     "derive_constants_key_material",
     "save_snapshot",
     "scan_constants",
+    "verify_provenance_chain",
 ]

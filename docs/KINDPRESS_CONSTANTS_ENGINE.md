@@ -60,6 +60,7 @@ Runner writes:
 - `kindpress/constants/constants.latest.json`
 - `kindpress/constants/constants.<UTC>.json`
 - `kindpress/constants/constants.history.jsonl`
+- `kindpress/constants/constants.provenance.jsonl` (append-only hash-chained artifact ledger)
 
 Each snapshot includes:
 
@@ -69,6 +70,12 @@ Each snapshot includes:
 - constants key fingerprint
 - key derivation parameters
 - community error-correction laws used
+
+Each provenance ledger event includes:
+
+- immutable snapshot identity and timestamp
+- SHA-256 checksums and sizes for latest/snapshot/history artifacts
+- a chain hash linked to the previous ledger event (tamper-evident)
 
 ## Run
 
