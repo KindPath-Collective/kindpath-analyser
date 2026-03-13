@@ -7,14 +7,22 @@ When the constants bank (k) is revised, records are not overwritten.
 They fork: the prior reading is preserved as is_current=False; the new reading is added
 as is_current=True. Both remain valid within their respective k-universes.
 
-The analogy is botanical:
-    Conventional selective breeding selects a trait — all other potentials from
-    the parent organism are lost at the moment of selection.
+**Fork-and-retain — the lineage weaving principle:**
 
-    Fork-and-retain is selective breeding that keeps all prior potentials from the
-    checkpoint of the fork. The genome (raw audio signal) is preserved. The expressed
-    phenotype (creative_residue) is environment-specific (k-specific). Revising k
-    produces a new expression — not a correction of the old one. Both are real.
+    A reading produced under one version of k is not a mistake waiting to be corrected
+    by the next version. It is a real interpretation within a real k-universe. When k
+    is revised — when a tag definition is updated, a baseline recalculated, an era
+    profile refined — the prior reading is preserved as a historical node in the record's
+    interpretational lineage. The revised reading becomes the recommended present
+    interpretation. Both exist. Neither erases the other.
+
+    This is not ambiguity. It is precision: specifying which constants were active
+    when a fingerprint was computed, so the fingerprint can be faithfully understood
+    by a future reader who was not there.
+
+    The raw audio signal (the source) is unchanged. What changes is the lens through
+    which it is read. Revising k produces a new interpretational branch — not a
+    correction of the old one. Both are real within their respective universes.
 
 This is multiversal with a time coefficient engaged: each k-version defines a
 distinct universe of valid interpretation, navigable by the baseline_version
@@ -35,9 +43,10 @@ Lineage confluence (confluent_reading):
     HMoE ±n valence, describes the full combinatorial space. This maps directly
     to the exponent in Φ = km^n: n is not a fixed coefficient but the active
     dimensionality of the confluence space at any point in time.
-    As universes accumulate and confluece, n grows — and Φ grows non-linearly.
+    As universes accumulate and confluence, n grows — and Φ grows non-linearly.
 """
 
+import hashlib
 import json
 import os
 from datetime import datetime, timezone
@@ -94,6 +103,19 @@ def add_reading(
         old_baseline_version = rec.get("baseline_version", "")
         residue_delta = new_creative_residue - old_residue
 
+        # reading_input_hash: SHA-256 of the canonical input values that produced this
+        # reading. Together with computed_at, this proves what data was present when
+        # this k-universe was constructed — enabling later audits to verify no retroactive
+        # alteration of the values took place after the reading was recorded.
+        _reading_inputs = json.dumps(
+            {
+                "creative_residue": new_creative_residue,
+                "authentic_emission_score": new_authentic_emission_score,
+                "manufacturing_score": new_manufacturing_score,
+                "baseline_version": new_baseline_version,
+            },
+            sort_keys=True,
+        )
         new_reading = {
             "creative_residue": new_creative_residue,
             "authentic_emission_score": new_authentic_emission_score,
@@ -107,6 +129,7 @@ def add_reading(
             # Confluent provenance: which prior reading universes were combined.
             # None = single-lineage fork. List of computed_at timestamps = confluence.
             "parent_reading_ids": parent_reading_ids,
+            "reading_input_hash": hashlib.sha256(_reading_inputs.encode("utf-8")).hexdigest(),
         }
         rec.setdefault("reading_history", []).append(new_reading)
 
@@ -159,6 +182,26 @@ def add_reading(
                 residue_delta=residue_delta,
                 computation_source=computation_source,
             )
+    except Exception:
+        pass
+
+    # Append to the CDC hash-chained audit log.
+    try:
+        from seedbank.cdc import append_event as _cdc_append
+        cdc_event_type = "confluence" if computation_source == "confluent" else "fork"
+        _cdc_append(
+            cdc_event_type,
+            record_id,
+            {
+                "filename": updated_record.get("filename", ""),
+                "old_baseline_version": old_baseline_version,
+                "new_baseline_version": new_baseline_version,
+                "residue_delta": residue_delta,
+                "computation_source": computation_source,
+                "parent_reading_ids": parent_reading_ids,
+                "reading_input_hash": new_reading["reading_input_hash"],
+            },
+        )
     except Exception:
         pass
 

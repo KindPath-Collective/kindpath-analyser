@@ -302,8 +302,6 @@ def benchmark_transport(
 #   if cryptography is not available. All non-sealing transport functions work
 #   without it.
 
-from __future__ import annotations  # already imported above; harmless repeat
-
 import base64
 import hashlib
 import os as _os

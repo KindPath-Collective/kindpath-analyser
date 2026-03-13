@@ -1,0 +1,123 @@
+{
+  "version": "1.0",
+  "description": "Production tool/DAW artifact signatures. Used to identify production environment from audio characteristics.",
+  "daw_artifacts": {
+    "pro_tools": {
+      "name": "Pro Tools",
+      "common_era": "1995-present",
+      "audio_artifacts": [
+        "precise sample-accurate editing boundary clicks (if uncorrected)",
+        "gain staging typical of high-headroom 32-bit float processing",
+        "Avid hardware console emulation signatures in older sessions"
+      ],
+      "context_notes": "Industry standard in professional studios. Pro Tools presence indicates professional studio context.",
+      "confidence_indicators": ["low noise floor", "precise dynamic range control", "typical professional mastering chain"]
+    },
+    "logic_pro": {
+      "name": "Logic Pro",
+      "common_era": "2004-present",
+      "audio_artifacts": [
+        "Vintage analog plugin emulations (VCA compressor, tape delay) with specific harmonic signatures",
+        "Drummer virtual instrument's characteristic groove patterns",
+        "Alchemy synthesiser timbral signatures",
+        "Space Designer reverb's specific impulse response character"
+      ],
+      "context_notes": "macOS-exclusive, common in independent and bedroom production since the price drop to £199.99.",
+      "confidence_indicators": ["Logic Drummer groove feel", "specific reverb tails", "clean mix bus"]
+    },
+    "ableton_live": {
+      "name": "Ableton Live",
+      "common_era": "2001-present",
+      "audio_artifacts": [
+        "Warp engine stretching artifacts at non-original tempos",
+        "Complex granular artefacts when extreme warping applied",
+        "Session view clip launching transient artifacts",
+        "Drum Rack's distinct workflow-based groove patterns"
+      ],
+      "context_notes": "Dominant in electronic music production and live performance contexts. The Warp engine's timestretching is identifiable at extreme ratios.",
+      "confidence_indicators": ["warped tempo artifacts on sustained elements", "electronic music context"]
+    },
+    "fl_studio": {
+      "name": "FL Studio",
+      "common_era": "1997-present",
+      "audio_artifacts": [
+        "Step sequencer grid-based composition patterns",
+        "Sytrus and Harmor synthesiser characteristic timbres",
+        "FL-specific mixer channel strip processing signatures"
+      ],
+      "context_notes": "Heavily used in hip-hop, trap, and EDM production globally. The step sequencer workflow leaves specific rhythmic pattern signatures.",
+      "confidence_indicators": ["trap hi-hat patterns", "specific synthesiser pad timbres"]
+    },
+    "garageband": {
+      "name": "GarageBand",
+      "common_era": "2004-present",
+      "audio_artifacts": [
+        "Apple Loops characteristic rhythmic patterns",
+        "Software instruments with distinctive timbral signatures",
+        "Lower dynamic range processing typical of default settings"
+      ],
+      "context_notes": "Entry-level production tool. Presence may indicate amateur or bedroom production context.",
+      "confidence_indicators": ["Apple Loops patterns (recognisable)", "default software instrument timbres"]
+    }
+  },
+  "hardware_signatures": {
+    "ssl_4000_console": {
+      "name": "SSL 4000 Console",
+      "era": "1981-present",
+      "signature": "G-Bus compressor 'glue' — specific attack/release characteristics that increase transient coherence across the mix",
+      "psychosomatic_note": "The SSL G-Bus became a prestige signal itself — its presence implies major label budget in the era before software emulations made it accessible.",
+      "frequency_signature": "gentle high-shelf boost above 8kHz, controlled sub-bass buildup"
+    },
+    "neve_1073": {
+      "name": "Neve 1073 Preamp/EQ",
+      "era": "1970-present",
+      "signature": "Transformer-based harmonic saturation, gentle 12kHz air band, characteristic warmth below 300Hz",
+      "psychosomatic_note": "The Neve sound is warm and present — associated with authenticity and professional recording. Its presence is both an authenticity marker and a prestige signal depending on context."
+    },
+    "urei_1176": {
+      "name": "UREI 1176 Compressor",
+      "era": "1967-present",
+      "signature": "FET compression with very fast attack (20-800μs), characteristic 'all-buttons-in' mode saturation",
+      "psychosomatic_note": "Fast FET compression adds presence and excitement. In all-buttons-in mode creates aggressive distortion — associated with rock and R&B energy."
+    },
+    "de_la_soul_production": {
+      "name": "Sample-Based Hip-Hop Production (Pre-Clearance Era)",
+      "era": "1985-1994",
+      "signature": "Recognisable sample slices with original recording characteristics intact, vinyl crackle, original room ambience preserved",
+      "psychosomatic_note": "Pre-clearance era sampling carried the acoustic DNA of the original recording into the new work. The original musicians' presence — their room, their bodies, their era — arrived in the new piece uninvited and honestly."
+    }
+  },
+  "processing_chain_signatures": {
+    "loudness_war_mastering": {
+      "name": "Loudness War Mastering",
+      "era": "1999-2012",
+      "signature": {
+        "crest_factor_db": "< 6",
+        "dynamic_range_db": "< 8",
+        "limiting_artifacts": "transients squared off, sustained elements appear louder than peaks"
+      },
+      "psychosomatic_note": "The most clearly documented manufacturing signature in modern music. Crest factor below 6dB creates perceptual fatigue — the body's dynamic response system has nothing to respond to. Associated with commercial pressure over listener wellbeing."
+    },
+    "auto_tune_pitched": {
+      "name": "Auto-Tune / Pitch Correction",
+      "era": "1997-present",
+      "signature": {
+        "micro_intonation_variance_cents": "< 5 (processed) vs 15-40 (natural)",
+        "retune_artifact": "visible pitch 'jumps' between notes — Cher Effect extreme version",
+        "vibrato_character": "uniform, perfect rate vs natural irregular vibrato"
+      },
+      "psychosomatic_note": "Heavy pitch correction removes the vocal signature of real-time performance. The body loses the micro-intonation variance that signals another living body's presence. Light correction is invisible; heavy correction is audible as absence."
+    },
+    "lo_fi_aesthetic": {
+      "name": "Lo-Fi Aesthetic Processing",
+      "era": "2017-present",
+      "signature": {
+        "noise_floor": "deliberate vinyl crackle or tape noise added",
+        "high_freq_rolloff": "artificial low-pass filter applied above 8kHz",
+        "dynamic_range": "moderate — not loudness-war compressed",
+        "groove_deviation_ms": "often humanised programmed drums"
+      },
+      "psychosomatic_note": "Lo-fi aesthetics are a reaction to loudness war overproduction — the noise floor, warmth, and imperfection are used as authenticity signals. But they are manufactured authenticity. The question is whether the underlying creative signal is genuine."
+    }
+  }
+}

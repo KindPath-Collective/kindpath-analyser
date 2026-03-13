@@ -1,0 +1,130 @@
+{
+  "version": "1.0",
+  "description": "Era production signatures for fingerprint matching. These complement ERA_PROFILES in fingerprints.py with richer context.",
+  "eras": {
+    "pre_1970": {
+      "name": "Pre-1970",
+      "crest_factor_range": [12, 25],
+      "dynamic_range_db": [15, 30],
+      "high_freq_rolloff_hz": 12000,
+      "noise_floor_range_db": [-55, -35],
+      "typical_sample_rates": [44100],
+      "dominant_recording_format": "analogue tape",
+      "production_markers": [
+        "tape saturation",
+        "variable wow and flutter",
+        "mono or early stereo",
+        "limited frequency response above 12kHz",
+        "amplifier distortion",
+        "room bleed between instruments"
+      ],
+      "psychosomatic_note": "The constraints of the format become an authenticity signature. Tape compression is friendly compression — it preserves dynamics while adding warmth. The noise floor carries evidence of the physical environment.",
+      "reference_lineages": ["delta_blues", "chicago_blues", "gospel_soul_roots", "early_rock_and_roll"]
+    },
+    "1970s": {
+      "name": "1970s",
+      "crest_factor_range": [10, 20],
+      "dynamic_range_db": [12, 25],
+      "high_freq_rolloff_hz": 14000,
+      "noise_floor_range_db": [-60, -45],
+      "typical_sample_rates": [44100],
+      "dominant_recording_format": "analogue tape, 24-track",
+      "production_markers": [
+        "analogue warmth",
+        "natural room reverb",
+        "valve/tube equipment signatures",
+        "physical ensemble dynamics",
+        "limited dynamic range control (before digital limiters)"
+      ],
+      "psychosomatic_note": "The peak of natural dynamics in recorded music. Ensemble playing created natural compression without destroying the crest factor. The body hears space between sounds.",
+      "reference_lineages": ["funk", "disco", "early_electronic_krautrock"]
+    },
+    "1980s": {
+      "name": "1980s",
+      "crest_factor_range": [8, 16],
+      "dynamic_range_db": [8, 18],
+      "high_freq_rolloff_hz": 18000,
+      "noise_floor_range_db": [-75, -55],
+      "dominant_recording_format": "digital/analogue hybrid, early digital masters",
+      "production_markers": [
+        "gated reverb on drums",
+        "digital sheen in high frequencies",
+        "MIDI grid-quantised rhythm",
+        "synthesiser bass replacing real bass",
+        "limited early digital artifacts",
+        "deliberate studio effect chains"
+      ],
+      "psychosomatic_note": "First era where production technique became audibly artificial. The gated snare is the decade's sonic signature — presence and absence as shock. Groove_deviation begins declining as MIDI replaces live performance.",
+      "reference_lineages": ["post_punk_new_wave", "early_hip_hop"]
+    },
+    "1990s": {
+      "name": "1990s",
+      "crest_factor_range": [6, 14],
+      "dynamic_range_db": [6, 14],
+      "high_freq_rolloff_hz": 20000,
+      "noise_floor_range_db": [-90, -65],
+      "dominant_recording_format": "digital (ADAT, DAT, early Pro Tools)",
+      "production_markers": [
+        "clean digital noise floor",
+        "loud mastering begins",
+        "compressed snare becoming standard",
+        "sample-based production mainstream",
+        "analogue hardware through digital domain"
+      ],
+      "psychosomatic_note": "The transition decade. The loudness war begins. Creative residue is highest in alternative and hip-hop lineages as digital tools democratised production before the templates solidified.",
+      "reference_lineages": ["grunge_alternative", "uk_rave_jungle_dnb", "trip_hop", "house", "techno"]
+    },
+    "2000s": {
+      "name": "2000s",
+      "crest_factor_range": [2, 8],
+      "dynamic_range_db": [2, 8],
+      "high_freq_rolloff_hz": 20000,
+      "noise_floor_range_db": [-95, -70],
+      "dominant_recording_format": "digital (Pro Tools, Logic, Ableton)",
+      "production_markers": [
+        "loudness war peak — extreme limiting",
+        "brickwall limiting as standard",
+        "Waves L2 limiter artifact (sharp transient limiting)",
+        "punch without breath",
+        "maximised RMS loudness",
+        "pitch correction widely adopted"
+      ],
+      "psychosomatic_note": "The climax of extraction-through-production. Crest factor below 6dB means the body never gets dynamic rest. Continuous near-peak loudness creates fatigue. The manufacturing score correlates directly with crest_factor in this era.",
+      "reference_lineages": ["uk_grime", "idm", "minimal_techno"]
+    },
+    "2010s": {
+      "name": "2010s",
+      "crest_factor_range": [4, 10],
+      "dynamic_range_db": [5, 12],
+      "high_freq_rolloff_hz": 20000,
+      "noise_floor_range_db": [-95, -75],
+      "dominant_recording_format": "digital DAW (streaming-era mastering)",
+      "production_markers": [
+        "streaming platform loudness normalisation influence",
+        "moderate pullback from peak loudness war",
+        "bass-heavy mastering for mobile listening",
+        "vocal production complexity",
+        "lo-fi aesthetics as conscious reaction"
+      ],
+      "psychosomatic_note": "First signs of the body reclaiming space. Streaming normalisation punished hypercompression commercially. But manufacturing sophistication compensated — the template became more efficient, not less present.",
+      "reference_lineages": ["contemporary_rnb", "post_dubstep_bass_music"]
+    },
+    "2020s": {
+      "name": "2020s",
+      "crest_factor_range": [5, 12],
+      "dynamic_range_db": [6, 14],
+      "high_freq_rolloff_hz": 20000,
+      "noise_floor_range_db": [-95, -75],
+      "dominant_recording_format": "digital, spatial audio emerging",
+      "production_markers": [
+        "Dolby Atmos and spatial audio integration",
+        "lo-fi aesthetics mainstream",
+        "bedroom production aesthetic",
+        "AI production tools beginning",
+        "dynamic range gradual recovery in some contexts"
+      ],
+      "psychosomatic_note": "Contradictory signals: genuine creative democratisation through accessible tools, alongside accelerating template production via AI. The authentic and manufactured signals are harder to distinguish. Creative_residue computation becomes more important as surface similarity increases.",
+      "reference_lineages": ["hyperpop", "contemporary_rnb"]
+    }
+  }
+}

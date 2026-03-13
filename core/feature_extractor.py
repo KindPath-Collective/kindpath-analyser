@@ -22,6 +22,7 @@ import librosa
 from dataclasses import dataclass, asdict
 from typing import Optional
 from core.segmentation import Segment
+from core.solfeggio import SolfeggioAlignment, compute_solfeggio_alignment
 
 
 @dataclass
@@ -89,6 +90,10 @@ class HarmonicFeatures:
     harmonic_complexity: float  # Weighted chord change density
     tension_ratio: float        # Proportion in dissonant states
     resolution_index: float     # How often tension resolves
+    solfeggio_alignment: Optional[SolfeggioAlignment] = None
+    # Three-axis frequency field reading:
+    # vocal_fundamental_deviation_hz, solfeggio_grid_proximity, institutional_distance.
+    # See core/solfeggio.py and kindpath-canon/FREQUENCY_FIELD_ARCHITECTURE.md.
 
 
 @dataclass
@@ -314,16 +319,25 @@ def _extract_harmonic(y: np.ndarray, sr: int) -> HarmonicFeatures:
     else:
         resolution_index = 0.0
 
+    tuning_offset_cents_val = float(tuning * 100)
+
+    solfeggio_alignment = compute_solfeggio_alignment(
+        chroma_mean=chroma_mean,
+        key_estimate=key_estimate,
+        tuning_offset_cents=tuning_offset_cents_val,
+    )
+
     return HarmonicFeatures(
         key_estimate=key_estimate,
         key_confidence=float(key_confidence),
         chroma_mean=chroma_mean,
         chroma_std=chroma_std,
         tonality_strength=tonality_strength,
-        tuning_offset_cents=float(tuning * 100),
+        tuning_offset_cents=tuning_offset_cents_val,
         harmonic_complexity=harmonic_complexity,
         tension_ratio=tension_ratio,
         resolution_index=resolution_index,
+        solfeggio_alignment=solfeggio_alignment,
     )
 
 

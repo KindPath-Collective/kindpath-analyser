@@ -1,0 +1,420 @@
+{
+  "version": "1.0",
+  "description": "Sonic lineage reference library. Each entry traces a tradition, its ancestors, and what it carries culturally and sonically.",
+  "lineages": [
+    {
+      "id": "delta_blues",
+      "name": "Delta Blues",
+      "era_range": [1920, 1945],
+      "parent_lineages": [],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [60, 100],
+        "dynamic_range_db": [12, 25],
+        "groove_deviation_ms": [20, 60],
+        "dominant_instruments": ["acoustic guitar", "harmonica", "voice"],
+        "production_era_signatures": ["mono", "room acoustics", "high noise floor"],
+        "harmonic_vocabulary": ["I-IV-V", "blues scale", "blue notes"],
+        "spectral_centroid_hz": [800, 2500],
+        "emotional_register": "raw longing, unmediated grief, direct address"
+      },
+      "cultural_context": "Mississippi Delta, Great Migration era. Expression of survival and witness under systemic oppression. Technique as shared community property — guitar passed between hands, patterns learned by watching.",
+      "kindpath_notes": "The origin point. Technique without mystification. Emotion without performance. The field's root signal is authentic emission in constrained circumstances."
+    },
+    {
+      "id": "chicago_blues",
+      "name": "Chicago Blues",
+      "era_range": [1945, 1965],
+      "parent_lineages": ["delta_blues"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [80, 130],
+        "dynamic_range_db": [10, 20],
+        "groove_deviation_ms": [15, 40],
+        "dominant_instruments": ["electric guitar", "harmonica", "bass", "drums", "piano", "voice"],
+        "production_era_signatures": ["early electric", "tube amplifiers", "single microphone recording"],
+        "harmonic_vocabulary": ["12-bar blues", "jazz-inflected chords", "call and response"],
+        "spectral_centroid_hz": [1000, 3500],
+        "emotional_register": "urban tension, community gathering, resilience as communal act"
+      },
+      "cultural_context": "Black migration north created new density. Electric amplification gave the Delta voice to a room. Chess Records, Muddy Waters, Howlin Wolf. The industrial city translated through the acoustic field.",
+      "kindpath_notes": "Electrification without losing the origin signal. Technology in service of expression, not expression reduced to technology. The body still drives the machine."
+    },
+    {
+      "id": "gospel_soul_roots",
+      "name": "Gospel / Soul Roots",
+      "era_range": [1930, 1965],
+      "parent_lineages": ["delta_blues"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [60, 130],
+        "dynamic_range_db": [14, 28],
+        "groove_deviation_ms": [18, 50],
+        "dominant_instruments": ["organ", "piano", "choir", "voice", "drums"],
+        "production_era_signatures": ["church acoustics", "natural reverb", "massed voices"],
+        "harmonic_vocabulary": ["gospel progressions", "major 7ths", "call and response", "suspension and release"],
+        "spectral_centroid_hz": [600, 2800],
+        "emotional_register": "collective transcendence, grief resolved into joy, community as medium"
+      },
+      "cultural_context": "The sacred tradition carrying the same emotional material as the blues but oriented toward communal transformation. Mahalia Jackson, Sam Cooke crossing over. The tension between serving a community and being captured by the market.",
+      "kindpath_notes": "The church as the original regenerative field holder. Community singing as distributed sovereignty. The voice as both individual and collective signal."
+    },
+    {
+      "id": "early_rock_and_roll",
+      "name": "Early Rock and Roll",
+      "era_range": [1950, 1962],
+      "parent_lineages": ["delta_blues", "chicago_blues", "gospel_soul_roots"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [120, 180],
+        "dynamic_range_db": [10, 18],
+        "groove_deviation_ms": [12, 35],
+        "dominant_instruments": ["electric guitar", "upright bass", "drums", "piano", "voice"],
+        "production_era_signatures": ["single room recording", "tape compression", "mono", "limited frequency response"],
+        "harmonic_vocabulary": ["12-bar blues", "I-IV-V", "boogie woogie patterns"],
+        "spectral_centroid_hz": [1200, 4000],
+        "emotional_register": "physical energy, transgression, youth claiming space"
+      },
+      "cultural_context": "White market reception of Black artistic forms — a pattern of extraction that would define the industry for decades. Chuck Berry, Little Richard, Elvis. The original three-stage mechanism: priming through rhythm, prestige through novelty, identity capture through youth culture.",
+      "kindpath_notes": "Note the mechanism at its origin: the form carries regenerative energy from its creators; the market captures the signal and redirects the value. Understanding this lineage means understanding the extraction pattern at the root."
+    },
+    {
+      "id": "british_invasion",
+      "name": "British Invasion",
+      "era_range": [1962, 1970],
+      "parent_lineages": ["early_rock_and_roll", "chicago_blues"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [100, 160],
+        "dynamic_range_db": [10, 16],
+        "groove_deviation_ms": [10, 25],
+        "dominant_instruments": ["electric guitar", "bass", "drums", "voice"],
+        "production_era_signatures": ["multitrack tape", "studio experimentation", "early stereo"],
+        "harmonic_vocabulary": ["expanded from 12-bar to jazz-influenced", "modal experimentation", "extended chords"],
+        "spectral_centroid_hz": [1500, 5000],
+        "emotional_register": "romanticism, youth culture, studio as instrument"
+      },
+      "cultural_context": "Blues tradition returned to America via Britain — transformed, whitened, amplified into a global commercial force. The Beatles, Rolling Stones. Studio became composition space. Production quality as artistic medium.",
+      "kindpath_notes": "Second-order signal: the form that learned from the extractors and accelerated the institutional capture of Black creative traditions. Sonic evidence of how far a signal can travel from its origin."
+    },
+    {
+      "id": "psychedelia",
+      "name": "Psychedelia",
+      "era_range": [1965, 1972],
+      "parent_lineages": ["british_invasion", "early_rock_and_roll"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [60, 140],
+        "dynamic_range_db": [10, 20],
+        "groove_deviation_ms": [15, 40],
+        "dominant_instruments": ["electric guitar", "bass", "drums", "keyboards", "sitar", "voice"],
+        "production_era_signatures": ["tape delay", "phaser", "tremolo", "complex multitrack", "reversed elements"],
+        "harmonic_vocabulary": ["modal", "drone-based", "non-Western scales", "extended improvisations"],
+        "spectral_centroid_hz": [800, 6000],
+        "emotional_register": "dissolution of ego, collective consciousness, sensory expansion, institutional questioning"
+      },
+      "cultural_context": "Counter-cultural moment where the studio was weaponised against consensus reality. Anti-war, anti-institution. The field was briefly bent toward collective questioning of conditioning itself — then captured and packaged.",
+      "kindpath_notes": "The moment the field articulated resistance to its own conditioning. High LSII signatures common — the pieces step outside the frames they build. Psychedelia as evidence that the conditioning can be seen and named from within a commercial form."
+    },
+    {
+      "id": "funk",
+      "name": "Funk",
+      "era_range": [1965, 1982],
+      "parent_lineages": ["gospel_soul_roots", "chicago_blues"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [90, 125],
+        "dynamic_range_db": [10, 18],
+        "groove_deviation_ms": [25, 70],
+        "dominant_instruments": ["electric bass", "drums", "horns", "electric guitar", "keyboards", "voice"],
+        "production_era_signatures": ["analogue warmth", "live room energy", "natural compression from ensemble playing"],
+        "harmonic_vocabulary": ["extended chords", "pentatonic", "vamping", "repetitive groove with improvisation"],
+        "spectral_centroid_hz": [300, 4000],
+        "emotional_register": "collective body sovereignty, joy as resistance, rhythm as liberation"
+      },
+      "cultural_context": "James Brown, Sly Stone, Parliament-Funkadelic. The body as political instrument. Joy as refusal. Groove as communal technology. The highest groove_deviation scores in the recorded archive — the body leading, the grid following.",
+      "kindpath_notes": "Reference point for authentic groove deviation. High groove_deviation_ms in a funk piece is the signal of healthy collective embodiment. Use as baseline for measuring what has been quantised out of later decades."
+    },
+    {
+      "id": "early_electronic_krautrock",
+      "name": "Early Electronic / Krautrock",
+      "era_range": [1968, 1980],
+      "parent_lineages": ["psychedelia"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [70, 130],
+        "dynamic_range_db": [12, 20],
+        "groove_deviation_ms": [5, 25],
+        "dominant_instruments": ["synthesisers", "sequencers", "electric guitar", "bass", "drums"],
+        "production_era_signatures": ["modular synthesis", "tape manipulation", "motorik rhythm", "repetitive patterns"],
+        "harmonic_vocabulary": ["drone", "modal", "repetitive minimalism", "noise elements"],
+        "spectral_centroid_hz": [400, 8000],
+        "emotional_register": "machine meditation, forward motion without destination, industrial landscape as aesthetic"
+      },
+      "cultural_context": "Can, Kraftwerk, Neu!, Tangerine Dream. Post-war German rejection of Anglo-American rock lineage. Technology as pure medium — no emotional pretension. The motorik rhythm: constant, non-emphatic forward motion. Foundation of everything that followed in electronic music.",
+      "kindpath_notes": "The template for electronic music as a distinct field. Low groove_deviation is intentional here — the machine as honest about its nature. Contrast with music that machines human performance to remove groove_deviation as a manufacturing choice."
+    },
+    {
+      "id": "disco",
+      "name": "Disco",
+      "era_range": [1972, 1980],
+      "parent_lineages": ["funk", "gospel_soul_roots"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [110, 135],
+        "dynamic_range_db": [8, 14],
+        "groove_deviation_ms": [10, 30],
+        "dominant_instruments": ["four-on-the-floor kick", "hi-hat", "bass", "strings", "horns", "voice"],
+        "production_era_signatures": ["studio sheen", "early compression", "orchestral arrangements", "4/4 entrainment"],
+        "harmonic_vocabulary": ["extended chords", "gospel-influenced melody", "major keys dominant"],
+        "spectral_centroid_hz": [1000, 6000],
+        "emotional_register": "physical pleasure, liberation through dance, queer and Black club space as sanctuary"
+      },
+      "cultural_context": "Emerged from Black, Latino, and LGBTQ+ club culture as a space of safety and joy. The 4-on-the-floor kick as body entrainment technology — used here for collective liberation, later appropriated as conditioning mechanism. The backlash (Disco Demolition Night) was explicit hostility.",
+      "kindpath_notes": "The 4-on-the-floor pattern originated here as communal tool. Track this forward into house, techno, EDM — the same pattern, different directions of use. Disco's original context was syntropic: marginalised communities creating safety through sonic field."
+    },
+    {
+      "id": "post_punk_new_wave",
+      "name": "Post-Punk / New Wave",
+      "era_range": [1976, 1986],
+      "parent_lineages": ["early_electronic_krautrock", "british_invasion"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [100, 175],
+        "dynamic_range_db": [10, 18],
+        "groove_deviation_ms": [8, 25],
+        "dominant_instruments": ["electric guitar", "bass", "drums", "synthesiser", "voice"],
+        "production_era_signatures": ["angular production", "minimal arrangements", "early digital reverb", "DIY recording"],
+        "harmonic_vocabulary": ["minimal chord vocabulary", "unusual inversions", "dissonance tolerated", "tension without conventional resolution"],
+        "spectral_centroid_hz": [1500, 7000],
+        "emotional_register": "alienation, intellectual rigour, body-held anxiety, critique of consumer culture"
+      },
+      "cultural_context": "Wire, Joy Division, Gang of Four, Talking Heads. Punk's critique made more sophisticated. Machine and human held in tension. Often explicitly anti-commercial, anti-prestige. The body registering political unease as physical sensation.",
+      "kindpath_notes": "High authenticity markers common — production intentionally avoids prestige signals. The tension_resolution_ratio often > 1 (unresolved). This is content that sits in the discomfort rather than manufacturing relief."
+    },
+    {
+      "id": "early_hip_hop",
+      "name": "Early Hip-Hop",
+      "era_range": [1979, 1990],
+      "parent_lineages": ["funk", "disco", "gospel_soul_roots"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [80, 110],
+        "dynamic_range_db": [10, 20],
+        "groove_deviation_ms": [15, 45],
+        "dominant_instruments": ["drum machines (TR-808, 606)", "samplers", "turntables", "voice"],
+        "production_era_signatures": ["vinyl sampling", "breaks looped", "drum machine snare", "lo-fi aesthetics from equipment limits"],
+        "harmonic_vocabulary": ["funk and soul samples", "minimal harmonic movement", "groove from rhythm not harmony"],
+        "spectral_centroid_hz": [300, 5000],
+        "emotional_register": "witness, community address, wordplay as sovereignty, collective memory as resource"
+      },
+      "cultural_context": "Bronx South Bronx as origin: resourcefulness under economic devastation (the landlord burning buildings for insurance, the Cross Bronx Expressway destroying community). Technology (turntables, drum machines) as democratised instruments. Grandmaster Flash, Afrika Bambaataa. Technique belongs to everyone — the crate-digging ethic.",
+      "kindpath_notes": "Crate-digging as the origin practice: finding the origin signal in recorded archives, isolating it, giving it back to the community. This module literally performs that function for any audio file."
+    },
+    {
+      "id": "house",
+      "name": "House",
+      "era_range": [1983, 1993],
+      "parent_lineages": ["disco", "early_electronic_krautrock", "early_hip_hop"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [118, 135],
+        "dynamic_range_db": [6, 14],
+        "groove_deviation_ms": [3, 18],
+        "dominant_instruments": ["TR-808/909 drums", "synthesiser bass", "piano", "voice (soulful)", "sampler"],
+        "production_era_signatures": ["four-on-the-floor", "Roland equipment artifacts", "Chicago sound", "sparse arrangements"],
+        "harmonic_vocabulary": ["jazz chords", "gospel influence", "minor key atmospherics"],
+        "spectral_centroid_hz": [400, 6000],
+        "emotional_register": "collective trance, body as vehicle for community, utopian joy, queer and Black dance space"
+      },
+      "cultural_context": "Chicago's Warehouse and Music Box clubs. Frankie Knuckles, Larry Heard. Black and queer communities creating their own field under hostile conditions. The machine serving the body rather than replacing it. The tempo entrains the heart.",
+      "kindpath_notes": "Where the electronic tradition absorbed soul and created a new communal form. The four-on-the-floor here is in service of collective embodiment — the same pattern that corporate EDM would later deploy for extraction. Classify by context, not pattern alone."
+    },
+    {
+      "id": "techno",
+      "name": "Techno",
+      "era_range": [1986, 1996],
+      "parent_lineages": ["early_electronic_krautrock", "house"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [130, 155],
+        "dynamic_range_db": [8, 16],
+        "groove_deviation_ms": [2, 15],
+        "dominant_instruments": ["drum machines", "synthesisers", "samplers"],
+        "production_era_signatures": ["Detroit industrial influence", "machine aesthetic", "repetition as meditation", "Roland TB-303 bass"],
+        "harmonic_vocabulary": ["minimal", "drone", "atonal elements", "chromatic tension"],
+        "spectral_centroid_hz": [200, 8000],
+        "emotional_register": "machine consciousness, post-industrial identity, future as uncertain territory, collective endurance"
+      },
+      "cultural_context": "Detroit: Juan Atkins, Derrick May, Kevin Saunderson. Post-industrial city where the machines replaced the workers who made them. Techno as processing that reality through the machines' own language. Music that acknowledged the post-work future before it arrived.",
+      "kindpath_notes": "High creative_residue scores common — significant departure from any prior genre baseline. Techno's emotional honesty about industrial reality is a form of syntropy: naming what is, rather than papering over it with false hope."
+    },
+    {
+      "id": "grunge_alternative",
+      "name": "Grunge / Alternative",
+      "era_range": [1988, 1998],
+      "parent_lineages": ["post_punk_new_wave", "early_rock_and_roll"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [80, 150],
+        "dynamic_range_db": [12, 22],
+        "groove_deviation_ms": [15, 45],
+        "dominant_instruments": ["distorted electric guitar", "bass", "drums", "voice"],
+        "production_era_signatures": ["dynamic contrast between verse and chorus", "natural recording", "lo-fi aesthetic as authentic marker"],
+        "harmonic_vocabulary": ["power chords", "open tunings", "major/minor ambiguity"],
+        "spectral_centroid_hz": [800, 5000],
+        "emotional_register": "alienation, anger as authenticity signal, rejection of performance, body-held generational anxiety"
+      },
+      "cultural_context": "Generation X processing 1980s excess. Nirvana, Soundgarden, Pearl Jam. The dynamic arc (quiet verse → loud chorus) as the sonic structure of held and released tension. Commercial success arrived and then consumed the very authenticity it had been attracted to.",
+      "kindpath_notes": "High LSII common: Kurt Cobain's late-song inversions are famous for a reason. The body registering what can't be said. Preserved dynamic range as authentic marker that commercial pressure later compressed away."
+    },
+    {
+      "id": "uk_rave_jungle_dnb",
+      "name": "UK Rave / Jungle / D&B",
+      "era_range": [1989, 2000],
+      "parent_lineages": ["house", "techno", "early_hip_hop"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [155, 180],
+        "dynamic_range_db": [8, 16],
+        "groove_deviation_ms": [8, 35],
+        "dominant_instruments": ["sampled breakbeats", "synthesiser bass", "ragga vocals", "TR-909"],
+        "production_era_signatures": ["amen break", "timestretched samples", "sub-bass emphasis", "complex polyrhythm"],
+        "harmonic_vocabulary": ["minimal harmonic movement", "reggae influence", "bass as harmonic foundation"],
+        "spectral_centroid_hz": [200, 10000],
+        "emotional_register": "physical urgency, community under pressure, multiculturalism as lived practice"
+      },
+      "cultural_context": "UK multicultural communities in South London, Bristol, East London. Caribbean musical traditions meeting electronic production tools. The amen break — a 2-second drum solo from 1969 — became the shared raw material for an entire generation. Community in the warehouse, outside the approved music infrastructure.",
+      "kindpath_notes": "The amen break is the most-sampled recording in history — nearly unrecognised by the creators. The pattern of origin signal extracted from its creators repeated. But jungle and D&B communities created something genuinely new from shared material — communal creative residue at a high level."
+    },
+    {
+      "id": "trip_hop",
+      "name": "Trip-Hop",
+      "era_range": [1991, 2001],
+      "parent_lineages": ["early_hip_hop", "early_electronic_krautrock", "uk_rave_jungle_dnb"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [65, 100],
+        "dynamic_range_db": [10, 18],
+        "groove_deviation_ms": [12, 35],
+        "dominant_instruments": ["sampled breaks", "bass", "piano", "voice (intimate)", "synthesiser"],
+        "production_era_signatures": ["lo-fi sampling", "vinyl crackle as aesthetic", "Bristol sound", "slow groove"],
+        "harmonic_vocabulary": ["jazz chords", "minor modes", "melodic bass lines"],
+        "spectral_centroid_hz": [300, 5000],
+        "emotional_register": "melancholy, interiority, urban isolation, contemplative withdrawal"
+      },
+      "cultural_context": "Bristol (Massive Attack, Portishead, Tricky), London, Mo Wax. The deceleration of hip-hop into introspective space. Mourning the loss of the utopian rave moment. Vinyl as sacred archive material.",
+      "kindpath_notes": "High LSII scores common in trip-hop — the genre is defined by late-song withdrawal and incompletion as artistic choice. High HNR in vocals (Portishead, Beth Gibbons) — the voice's tensions left unprocessed as an honest signal."
+    },
+    {
+      "id": "idm",
+      "name": "IDM",
+      "era_range": [1991, 9999],
+      "parent_lineages": ["early_electronic_krautrock", "techno", "uk_rave_jungle_dnb"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [80, 200],
+        "dynamic_range_db": [10, 20],
+        "groove_deviation_ms": [0, 30],
+        "dominant_instruments": ["synthesisers", "samplers", "unconventional percussion", "glitch elements"],
+        "production_era_signatures": ["Warp Records aesthetic", "complex polyrhythm", "audio as texture", "non-linear composition"],
+        "harmonic_vocabulary": ["atonal elements", "microtonality", "extreme harmonic complexity"],
+        "spectral_centroid_hz": [100, 16000],
+        "emotional_register": "cognitive complexity as emotional register, machine interiority, non-linear time"
+      },
+      "cultural_context": "Aphex Twin, Autechre, Boards of Canada. Pushing electronic music toward extreme compositional complexity and away from functional dance use. The label 'Intelligent' was contested — the implicit contrast problematic, the music genuine.",
+      "kindpath_notes": "Highest harmonic_complexity and creative_residue scores in the reference library. IDM as sonic research — technique serving exploration rather than market function. The high complexity is often the authentic emission, not prestige signalling."
+    },
+    {
+      "id": "minimal_techno",
+      "name": "Minimal Techno",
+      "era_range": [1997, 2012],
+      "parent_lineages": ["techno", "house"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [125, 140],
+        "dynamic_range_db": [6, 14],
+        "groove_deviation_ms": [2, 12],
+        "dominant_instruments": ["percussion (digital)", "bass", "minimal synthesiser elements"],
+        "production_era_signatures": ["Berlin sound", "micro-elements", "long development arcs", "surgical mixing"],
+        "harmonic_vocabulary": ["minimal harmonic content", "repetition with micro-variation", "drone elements"],
+        "spectral_centroid_hz": [100, 6000],
+        "emotional_register": "contemplative endurance, stripped ego, body-as-rhythm-machine, collective trance"
+      },
+      "cultural_context": "Berlin post-reunification. Richie Hawtin, Robert Hood, Ricardo Villalobos. Berghain as institution. Reduction as aesthetic and ethical position — precision over complexity. Long sets, no lighting, no phone cameras. Temporary community through shared attention.",
+      "kindpath_notes": "Low creative_residue by design — the minimal aesthetic is intentional. Manufacturing_score may read high due to production precision, but the context is authentic. Classification requires cultural context, not just signal analysis."
+    },
+    {
+      "id": "psytrance",
+      "name": "Psytrance",
+      "era_range": [1993, 9999],
+      "parent_lineages": ["early_electronic_krautrock", "psychedelia", "techno"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [138, 160],
+        "dynamic_range_db": [6, 14],
+        "groove_deviation_ms": [1, 8],
+        "dominant_instruments": ["synthesisers", "four-on-the-floor kick", "rolling bass patterns"],
+        "production_era_signatures": ["Goa origin", "complex modular synthesis", "long builds", "psychedelic imagery"],
+        "harmonic_vocabulary": ["modal", "alien tonalities", "bass oscillation as harmonic foundation"],
+        "spectral_centroid_hz": [200, 12000],
+        "emotional_register": "trance induction, collective dissolution, hypnotic repetition, consciousness as landscape"
+      },
+      "cultural_context": "Goa beaches, Israeli electronic scene, global gathering culture. Music as ritual technology. The full-day festival format: music as environment rather than entertainment. Community through shared altered state.",
+      "kindpath_notes": "Highest body_priming scores — the 4-on-the-floor at 145 BPM with persistent bass oscillation is explicit somatic entrainment. In context (outdoor gathering, community intention) this is communal. Extracted into commercial festival or playlist context, the same mechanics become extraction. Context determines direction."
+    },
+    {
+      "id": "uk_grime",
+      "name": "UK Grime",
+      "era_range": [2001, 9999],
+      "parent_lineages": ["uk_rave_jungle_dnb", "early_hip_hop"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [130, 145],
+        "dynamic_range_db": [6, 14],
+        "groove_deviation_ms": [5, 20],
+        "dominant_instruments": ["synthesiser bass", "sparse percussion", "voice (aggressive delivery)", "MC culture"],
+        "production_era_signatures": ["East London", "pirate radio aesthetics", "clashing, abrasive textures", "sparse production"],
+        "harmonic_vocabulary": ["minor keys dominant", "chromatic bass movement", "atmospheric pads"],
+        "spectral_centroid_hz": [200, 8000],
+        "emotional_register": "urban witness, community address, anger as precise instrument, territorial pride"
+      },
+      "cultural_context": "East London pirate radio, council estates. Dizzee Rascal, Skepta, Wiley. Young Black British communities creating expressive infrastructure outside and despite the official music industry. Music as community communication technology.",
+      "kindpath_notes": "High authentic_emission scores in early grime. The pirate radio context meant no commercial mediation — direct community address. As grime entered the mainstream, the manufacturing_score rises and the authentic signal is progressively reconstructed for market consumption."
+    },
+    {
+      "id": "post_dubstep_bass_music",
+      "name": "Post-Dubstep / Bass Music",
+      "era_range": [2007, 9999],
+      "parent_lineages": ["uk_grime", "uk_rave_jungle_dnb", "minimal_techno"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [130, 145],
+        "dynamic_range_db": [6, 14],
+        "groove_deviation_ms": [5, 20],
+        "dominant_instruments": ["sub-bass", "sparse percussion", "synthesiser", "voice"],
+        "production_era_signatures": ["bass weight as primary element", "negative space", "detailed sound design"],
+        "harmonic_vocabulary": ["bass as harmonic foundation", "minimal melodic content", "tension through absence"],
+        "spectral_centroid_hz": [100, 6000],
+        "emotional_register": "interiority, urban grief held without resolution, the body as primary listener"
+      },
+      "cultural_context": "Burial, Actress, The xx. Music that processed the post-financial-crisis condition — community dissolving, intimacy becoming harder, digital isolation alongside physical proximity. Bass frequencies as the honest emotional register of the body.",
+      "kindpath_notes": "Burial's work carries one of the highest LSII records in the reference library. The late-song inversions are total — the last quarter of a Burial piece often deconstructs everything that came before. The body's late-stage signature is in the work."
+    },
+    {
+      "id": "contemporary_rnb",
+      "name": "Contemporary R&B",
+      "era_range": [2010, 9999],
+      "parent_lineages": ["gospel_soul_roots", "early_hip_hop", "post_dubstep_bass_music"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [65, 110],
+        "dynamic_range_db": [4, 10],
+        "groove_deviation_ms": [3, 15],
+        "dominant_instruments": ["voice (highly processed)", "electronic drums", "synthesiser bass", "sparse production"],
+        "production_era_signatures": ["heavy pitch correction", "trap hi-hat patterns", "minimalist production", "streaming mastering"],
+        "harmonic_vocabulary": ["jazz-inflected", "neo-soul harmonics", "extended chords"],
+        "spectral_centroid_hz": [500, 8000],
+        "emotional_register": "intimacy performed at scale, vulnerability as product, emotional labour made content"
+      },
+      "cultural_context": "Frank Ocean, SZA, The Weeknd. The streaming era's compression of emotional range. Authentic-seeming vulnerability delivered through maximally processed signal. The market learned that the appearance of authenticity is more valuable than authenticity — the three-stage mechanism fully internalised.",
+      "kindpath_notes": "High pitch_correction_likelihood + low performance_artifacts = classic manufacturing signal even when the emotional content is marketed as raw. The three-stage mechanism operating at peak efficiency. High manufacturing + low creative_residue is the diagnostic signature."
+    },
+    {
+      "id": "hyperpop",
+      "name": "Hyperpop",
+      "era_range": [2017, 9999],
+      "parent_lineages": ["contemporary_rnb", "post_dubstep_bass_music", "early_electronic_krautrock"],
+      "sonic_characteristics": {
+        "tempo_bpm_range": [80, 200],
+        "dynamic_range_db": [2, 8],
+        "groove_deviation_ms": [1, 8],
+        "dominant_instruments": ["heavily processed voice", "distorted synthesisers", "maximalist production"],
+        "production_era_signatures": ["intentional distortion", "pitch shift as aesthetic", "PC Music label influence", "internet-native aesthetics"],
+        "harmonic_vocabulary": ["tonal whiplash", "major key aggression", "ironic use of pop conventions"],
+        "spectral_centroid_hz": [2000, 16000],
+        "emotional_register": "ironic sincerity, digital body, aestheticized suffering, post-ironic yearning"
+      },
+      "cultural_context": "PC Music, 100 gecs, SOPHIE. Hypercompression and maximalism as both critique and embrace of late-stage consumer culture aesthetics. Online-native communities processing identity in digital environments. SOPHIE's work specifically carried deep authenticity about trans identity.",
+      "kindpath_notes": "Complex classification case: manufactured aesthetic that carries genuine authentic emission for specific communities. The distortion and maximalism read as high manufacturing_score, but the creative_residue is often high too. The signal is doing something genuine even through its maximally processed surface."
+    }
+  ]
+}

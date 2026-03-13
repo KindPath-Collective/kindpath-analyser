@@ -29,6 +29,7 @@ from typing import List, Optional, Dict
 
 from core.divergence import TrajectoryProfile, LatesonginversionResult
 from core.fingerprints import FingerprintReport
+from core.solfeggio import SolfeggioAlignment
 
 
 # ── Result dataclass ─────────────────────────────────────────────────────────
@@ -76,10 +77,16 @@ class PsychosomaticProfile:
     manufacturing_score: float          # 0-1: engineered delivery mechanism
     creative_residue: float             # What remains after known signatures subtracted
 
+    # Frequency field alignment (Solfeggio / biological reference measurement).
+    # Three simultaneous readings: vocal fundamental deviation, Solfeggio grid proximity,
+    # and institutional distance from biological reference. Optional — present when
+    # quarter_features were available during profile construction.
+    solfeggio_alignment: Optional[SolfeggioAlignment] = None
+
     # Narrative — the synthetic elder's voice
-    somatic_summary: str                # What this is doing to a body
-    mechanism_summary: str              # Conditioning mechanics if detected
-    elder_reading: str                  # Full synthesis
+    somatic_summary: str = ''           # What this is doing to a body
+    mechanism_summary: str = ''         # Conditioning mechanics if detected
+    elder_reading: str = ''             # Full synthesis
 
 
 # ── Builder ──────────────────────────────────────────────────────────────────
@@ -88,6 +95,7 @@ def build_psychosomatic_profile(
     trajectory: TrajectoryProfile,
     fingerprints: FingerprintReport,
     stem_features: Optional[Dict] = None,
+    solfeggio_alignment: Optional[SolfeggioAlignment] = None,
 ) -> PsychosomaticProfile:
     """
     Synthesise all analysis into a psychosomatic profile.
@@ -115,7 +123,7 @@ def build_psychosomatic_profile(
     manufacturing = _compute_manufacturing_score(fingerprints, trajectory)
     creative_residue = _compute_creative_residue(trajectory, fingerprints)
 
-    priming_vectors = _build_priming_vectors(trajectory, fingerprints)
+    priming_vectors = _build_priming_vectors(trajectory, fingerprints, solfeggio_alignment)
     prestige_signals = _extract_prestige_signals(fingerprints)
     identity_capture_risk = min(0.98, (stage3_risk + manufacturing * 0.3) / 1.3)
 
@@ -140,6 +148,7 @@ def build_psychosomatic_profile(
         valence=valence,
         arousal=arousal,
         tension_ratio=tension_ratio,
+        solfeggio_alignment=solfeggio_alignment,
     )
 
     return PsychosomaticProfile(
@@ -165,6 +174,7 @@ def build_psychosomatic_profile(
         authentic_emission_score=authentic_emission,
         manufacturing_score=manufacturing,
         creative_residue=creative_residue,
+        solfeggio_alignment=solfeggio_alignment,
         somatic_summary=somatic_summary,
         mechanism_summary=mechanism_summary,
         elder_reading=elder_reading,
@@ -405,7 +415,11 @@ def _compute_creative_residue(traj: TrajectoryProfile, fp: FingerprintReport) ->
 
 # ── Vectors and signals ────────────────────────────────────────────────────────
 
-def _build_priming_vectors(traj: TrajectoryProfile, fp: FingerprintReport) -> List[str]:
+def _build_priming_vectors(
+    traj: TrajectoryProfile,
+    fp: FingerprintReport,
+    solfeggio_alignment: Optional[SolfeggioAlignment] = None,
+) -> List[str]:
     vectors = []
     arousal = _compute_arousal(traj)
     valence = _compute_valence(traj)
@@ -415,6 +429,22 @@ def _build_priming_vectors(traj: TrajectoryProfile, fp: FingerprintReport) -> Li
         vectors.append("melancholic pre-set / longing installation")
     if valence > 0.4 and arousal > 0.5:
         vectors.append("reward-anticipation loop")
+
+    # Frequency field priming: high institutional distance means the piece
+    # operates outside the biological resonance range — the body registers this
+    # as a field condition before conscious engagement begins.
+    if solfeggio_alignment is not None:
+        if solfeggio_alignment.institutional_distance > 0.7:
+            vectors.append(
+                "institutional frequency field — tonal centre anchored to A440 standard, "
+                "operating outside biological vocal resonance range (~130 Hz)"
+            )
+        elif solfeggio_alignment.solfeggio_grid_proximity > 0.5:
+            vectors.append(
+                f"Solfeggio grid resonance — prominent frequencies align with "
+                f"pre-institutional harmonic series ({solfeggio_alignment.nearest_solfeggio_name})"
+            )
+
     if not vectors:
         vectors.append("low-priming presence — no strong psychosomatic pre-set detected")
     return vectors
@@ -549,7 +579,8 @@ def _build_mechanism_summary(stage1: bool, stage2: bool, stage3_risk: float,
 
 def _build_elder_reading(*, trajectory, lsii, authentic_emission, manufacturing,
                           creative_residue, stage1_detected, stage2_detected,
-                          stage3_risk, valence, arousal, tension_ratio) -> str:
+                          stage3_risk, valence, arousal, tension_ratio,
+                          solfeggio_alignment: Optional[SolfeggioAlignment] = None) -> str:
     """
     The synthetic elder's voice. Clear, non-judgmental, precise.
     Reads like wisdom, not analysis.
@@ -622,5 +653,22 @@ def _build_elder_reading(*, trajectory, lsii, authentic_emission, manufacturing,
             "It ends in a state of incompletion. Whether this is artistic or commercial intent "
             "is not readable from the signal alone."
         )
+
+    # Frequency field reading — what the tuning and tonal centre reveal about
+    # the relationship between this piece and biological/institutional standards.
+    if solfeggio_alignment is not None:
+        if solfeggio_alignment.institutional_distance > 0.5:
+            parts.append(
+                f"The frequency field sits at an institutional distance of "
+                f"{solfeggio_alignment.institutional_distance:.2f} from biological reference. "
+                f"{solfeggio_alignment.alignment_reading}"
+            )
+        elif solfeggio_alignment.solfeggio_grid_proximity > 0.4:
+            parts.append(
+                f"The tonal material shows alignment with the pre-institutional harmonic series "
+                f"(nearest: {solfeggio_alignment.nearest_solfeggio_name} at "
+                f"{solfeggio_alignment.nearest_solfeggio_hz:.0f} Hz). "
+                f"{solfeggio_alignment.alignment_reading}"
+            )
 
     return " ".join(parts)

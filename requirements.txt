@@ -19,5 +19,8 @@ plotly>=5.0.0
 # For DAW plugin fingerprinting (future module)
 # tensorflow>=2.12.0  # For trained classifier models
 
+# IP protection and file sealing (AES-256-GCM)
+cryptography>=41.0.0
+
 # Standard library only beyond this point
 # json, os, sys, dataclasses, typing - all built in

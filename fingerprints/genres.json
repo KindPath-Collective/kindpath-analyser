@@ -1,0 +1,109 @@
+{
+  "version": "1.0",
+  "description": "Genre sonic profiles for classification and lineage matching. Each genre entry provides measurable characteristics for signal-based classification.",
+  "genres": {
+    "blues": {
+      "name": "Blues",
+      "parent_lineages": ["delta_blues", "chicago_blues"],
+      "tempo_bpm_range": [60, 130],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["12-bar", "blues scale", "I-IV-V"],
+      "groove_deviation_ms_typical": [20, 60],
+      "dynamic_range_db_typical": [12, 25],
+      "manufacturing_baseline": 0.1
+    },
+    "electronic": {
+      "name": "Electronic",
+      "parent_lineages": ["early_electronic_krautrock", "techno", "house"],
+      "tempo_bpm_range": [100, 175],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["minimal", "drone", "modal"],
+      "groove_deviation_ms_typical": [0, 20],
+      "dynamic_range_db_typical": [6, 16],
+      "manufacturing_baseline": 0.4
+    },
+    "hip_hop": {
+      "name": "Hip-Hop",
+      "parent_lineages": ["early_hip_hop", "funk"],
+      "tempo_bpm_range": [70, 115],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["sample-based", "pentatonic", "minor modes"],
+      "groove_deviation_ms_typical": [8, 40],
+      "dynamic_range_db_typical": [6, 18],
+      "manufacturing_baseline": 0.35
+    },
+    "pop": {
+      "name": "Pop",
+      "parent_lineages": ["early_rock_and_roll", "british_invasion", "contemporary_rnb"],
+      "tempo_bpm_range": [95, 140],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["I-IV-V-vi", "major key dominant", "predictable resolution"],
+      "groove_deviation_ms_typical": [3, 15],
+      "dynamic_range_db_typical": [4, 10],
+      "manufacturing_baseline": 0.7,
+      "notes": "Pop genre has the highest manufacturing baseline — genre-conventional production is the defining feature. Authentic emission in a pop context requires significant deviation from these norms."
+    },
+    "rnb_soul": {
+      "name": "R&B / Soul",
+      "parent_lineages": ["gospel_soul_roots", "funk", "contemporary_rnb"],
+      "tempo_bpm_range": [65, 110],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["jazz chords", "gospel progressions", "extended harmonies"],
+      "groove_deviation_ms_typical": [5, 30],
+      "dynamic_range_db_typical": [5, 14],
+      "manufacturing_baseline": 0.5
+    },
+    "rock": {
+      "name": "Rock",
+      "parent_lineages": ["british_invasion", "early_rock_and_roll", "grunge_alternative"],
+      "tempo_bpm_range": [90, 160],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["power chords", "pentatonic", "I-IV-V"],
+      "groove_deviation_ms_typical": [10, 35],
+      "dynamic_range_db_typical": [8, 18],
+      "manufacturing_baseline": 0.3
+    },
+    "ambient": {
+      "name": "Ambient",
+      "parent_lineages": ["early_electronic_krautrock", "idm"],
+      "tempo_bpm_range": [0, 80],
+      "time_signature": null,
+      "harmonic_vocabulary": ["drone", "tonal clusters", "slow evolution"],
+      "groove_deviation_ms_typical": [0, 5],
+      "dynamic_range_db_typical": [14, 30],
+      "manufacturing_baseline": 0.2
+    },
+    "jazz": {
+      "name": "Jazz",
+      "parent_lineages": ["gospel_soul_roots", "chicago_blues"],
+      "tempo_bpm_range": [60, 300],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["extended chords", "jazz harmony", "modal", "chromaticism"],
+      "groove_deviation_ms_typical": [20, 60],
+      "dynamic_range_db_typical": [14, 28],
+      "manufacturing_baseline": 0.1,
+      "notes": "Jazz has the lowest manufacturing baseline — the genre is defined by improvisation and real-time human decision making. High groove_deviation and high harmonic_complexity are both authentic markers in jazz context."
+    },
+    "country": {
+      "name": "Country",
+      "parent_lineages": ["delta_blues", "early_rock_and_roll"],
+      "tempo_bpm_range": [80, 160],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["I-IV-V", "major keys", "diatonic movement"],
+      "groove_deviation_ms_typical": [8, 30],
+      "dynamic_range_db_typical": [6, 16],
+      "manufacturing_baseline": 0.45
+    },
+    "dance_edm": {
+      "name": "Dance / EDM",
+      "parent_lineages": ["house", "techno", "disco"],
+      "tempo_bpm_range": [125, 145],
+      "time_signature": [4, 4],
+      "harmonic_vocabulary": ["minimal", "I-IV-vi-V", "major key energy"],
+      "groove_deviation_ms_typical": [0, 8],
+      "dynamic_range_db_typical": [4, 10],
+      "manufacturing_baseline": 0.75,
+      "notes": "Commercial EDM has the highest manufacturing scores after pop. The body-priming technique (4-on-the-floor, sub-bass, 128 BPM) is deployed systematically. Contrast with the house and techno origins where the same techniques served community contexts."
+    }
+  }
+}

@@ -174,6 +174,35 @@ def define_tag(
     return tag
 
 
+def propose_tag_revision(
+    name: str,
+    description: str,
+    scope: str,
+    chunk_sizes: Optional[List[int]] = None,
+    max_sample: int = 200,
+    seed: int = 42,
+) -> "TagRevisionReport":  # noqa: F821 — forward ref resolved at call time
+    """
+    Run the full validation protocol for a proposed tag revision WITHOUT committing it.
+
+    This is the correct entry point for any tag change. It returns a TagRevisionReport
+    with a recommendation (APPROVE / CAUTION / REJECT) and a revision_rationale you
+    can pass directly to revise_tag() as the revision_reason.
+
+    Raises ImportError if kindpress.validate is not available.
+    """
+    # Lazy import to avoid circular dependency at module load time
+    from kindpress.validate import validate_tag_revision  # noqa: PLC0415
+    return validate_tag_revision(
+        tag_name=name,
+        proposed_description=description,
+        proposed_scope=scope,
+        chunk_sizes=chunk_sizes,
+        max_sample=max_sample,
+        seed=seed,
+    )
+
+
 def revise_tag(
     name: str,
     description: str,
@@ -182,6 +211,8 @@ def revise_tag(
     revision_source: Optional[str] = None,
     examples: Optional[List[str]] = None,
     anti_examples: Optional[List[str]] = None,
+    validate_first: bool = True,
+    _validation_report=None,
 ) -> TagDefinition:
     """
     Revise an existing tag's definition.
@@ -189,10 +220,54 @@ def revise_tag(
     Adds a new version to the tag's history. Does not delete the old version.
     Returns the updated TagDefinition.
 
+    validate_first (default True): Run the full KindPress validation protocol before
+    committing. A REJECT recommendation raises ValueError — the revision is blocked
+    until the proposed change is reworked. A CAUTION recommendation prints a warning
+    and proceeds. Pass validate_first=False only when the caller holds a pre-computed
+    validation report (pass it as _validation_report) or for emergency dry-run scenarios
+    where the corpus is empty.
+
+    _validation_report: an already-computed TagRevisionReport to use instead of
+    re-running the protocol. Only honoured if validate_first=True.
+
     After revision, any seedbank records tagged with this tag and encoded
     under a prior version should be considered stale — run
     flag_stale_records(tag_name) to mark them for recomputation.
     """
+    if validate_first:
+        # Use a pre-computed report if provided, otherwise run the full protocol.
+        if _validation_report is None:
+            try:
+                from kindpress.validate import validate_tag_revision  # noqa: PLC0415
+                _validation_report = validate_tag_revision(
+                    tag_name=name,
+                    proposed_description=description,
+                    proposed_scope=scope,
+                )
+            except ImportError:
+                # kindpress not installed — degrade gracefully, warn loudly.
+                print(
+                    f"[TAGS] WARNING: kindpress.validate unavailable — proceeding without "
+                    f"HMoE gate for '{name}'. Install kindpress to enforce the revision gate."
+                )
+                _validation_report = None
+
+        if _validation_report is not None:
+            rec = _validation_report.recommendation
+            if rec == "REJECT":
+                raise ValueError(
+                    f"Tag revision for '{name}' REJECTED by HMoE validation protocol.\n"
+                    f"Rationale: {_validation_report.revision_rationale or _validation_report.implication_summary}\n"
+                    f"Run propose_tag_revision('{name}', ...) to diagnose the issue, "
+                    f"then rework the proposed description before retrying."
+                )
+            if rec == "CAUTION":
+                print(
+                    f"[TAGS] CAUTION: Revision for '{name}' is sound at small scale but "
+                    f"degrades at corpus optimum. Proceeding — monitor for HMoE drift.\n"
+                    f"Rationale: {_validation_report.revision_rationale or _validation_report.implication_summary}"
+                )
+
     registry = _load_registry()
     if name not in registry:
         raise ValueError(

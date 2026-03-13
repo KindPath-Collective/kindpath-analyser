@@ -179,6 +179,12 @@ def generate_html_report(
 
 {_mechanism_section(psychosomatic)}
 
+<!-- SECTION 5.5: Frequency Field Alignment -->
+{_solfeggio_section(psychosomatic)}
+
+<!-- SECTION 6: HMoE Framing -->
+{_hmoe_section(psychosomatic, trajectory)}
+
 <!-- SECTION 7: Technical Detail (collapsible) -->
 <details>
 <summary>Technical detail — feature values per quarter</summary>
@@ -258,6 +264,20 @@ def generate_json_report(
             "elder_reading": psychosomatic.elder_reading,
             "somatic_summary": psychosomatic.somatic_summary,
             "mechanism_summary": psychosomatic.mechanism_summary,
+            "solfeggio_alignment": (
+                {
+                    "vocal_fundamental_deviation_hz": round(psychosomatic.solfeggio_alignment.vocal_fundamental_deviation_hz, 3),
+                    "solfeggio_grid_proximity": round(psychosomatic.solfeggio_alignment.solfeggio_grid_proximity, 4),
+                    "nearest_solfeggio_hz": psychosomatic.solfeggio_alignment.nearest_solfeggio_hz,
+                    "nearest_solfeggio_name": psychosomatic.solfeggio_alignment.nearest_solfeggio_name,
+                    "institutional_distance": round(psychosomatic.solfeggio_alignment.institutional_distance, 4),
+                    "tuning_deviation_cents": round(psychosomatic.solfeggio_alignment.tuning_deviation_cents, 2),
+                    "alignment_reading": psychosomatic.solfeggio_alignment.alignment_reading,
+                    "dominant_solfeggio": psychosomatic.solfeggio_alignment.dominant_solfeggio,
+                }
+                if psychosomatic.solfeggio_alignment is not None
+                else None
+            ),
         },
         "fingerprints": {
             "production_context": fingerprints.production_context,
@@ -289,6 +309,31 @@ def generate_json_report(
                 }
                 for m in fingerprints.likely_instruments
             ],
+        },
+        "hmoe_framing": {
+            "note": "HMoE (Heterogeneous Multiplicity of Evidence) = var(creative_residue) x mean(effective_n). Corpus-level; compute via kindpress.reason.compute_tag_calibration() once deposited.",
+            "per_record_inputs": {
+                "creative_residue": {
+                    "value": round(psychosomatic.creative_residue, 4),
+                    "role": "primary_m_signal",
+                    "description": "Raw residue after genre/era subtraction. The m in Phi = k*m^n.",
+                },
+                "authentic_emission_score": {
+                    "value": round(psychosomatic.authentic_emission_score, 4),
+                    "role": "delta_corroboration",
+                    "description": "Validates that creative_residue is genuine signal, not noise.",
+                },
+                "manufacturing_score": {
+                    "value": round(psychosomatic.manufacturing_score, 4),
+                    "role": "inverse_residue",
+                    "description": "Inverse of authentic signal. High manufacturing = low genuine m contribution.",
+                },
+                "lsii": {
+                    "value": round(trajectory.lsii_result.lsii, 4),
+                    "role": "temporal_residue",
+                    "description": "Hidden authentic signal that surfaces in the final section.",
+                },
+            },
         },
     }
 
@@ -436,6 +481,138 @@ def _mechanism_section(ps: PsychosomaticProfile) -> str:
   <p>{_escape(ps.mechanism_summary)}</p>
 </div>
 {evidence_html}"""
+
+
+def _solfeggio_section(psychosomatic: PsychosomaticProfile) -> str:
+    """Render the frequency field alignment section (Section 5.5).
+
+    Shows three simultaneous measurements:
+    - Vocal fundamental deviation from biological reference (~130 Hz)
+    - Solfeggio grid proximity (alignment with pre-institutional harmonic series)
+    - Institutional distance (0 = biological, 1 = full A440 institutional frame)
+
+    Returns empty string if no solfeggio_alignment data is available.
+    """
+    sa = psychosomatic.solfeggio_alignment
+    if sa is None:
+        return ''
+
+    def _bar(value: float, invert: bool = False) -> str:
+        """Render a simple HTML progress bar (0.0–1.0)."""
+        pct = int(max(0.0, min(1.0, value)) * 100)
+        colour = '#F5A623' if value > 0.6 else '#555'
+        return (
+            f'<div style="background:#1a1a1a;border-radius:3px;height:10px;width:100%;max-width:300px;">'
+            f'<div style="background:{colour};width:{pct}%;height:100%;border-radius:3px;"></div></div>'
+        )
+
+    vocal_dev_normalised = min(abs(sa.vocal_fundamental_deviation_hz) / 30.0, 1.0)
+
+    return f"""<section class="solfeggio-section" style="margin-top:32px;">
+<h2>Frequency Field Alignment</h2>
+<p class="section-explain">
+  Three simultaneous readings: how far this piece sits from biological vocal resonance,
+  how closely its tonal material aligns with the pre-institutional harmonic series
+  (Guido d&#39;Arezzo, ~1025 AD), and its distance from the A440 institutional standard.
+</p>
+
+<table class="freq-table" style="width:100%;border-collapse:collapse;margin:16px 0;">
+  <thead>
+    <tr style="text-align:left;border-bottom:1px solid #333;">
+      <th style="padding:8px 12px 8px 0;">Measurement</th>
+      <th style="padding:8px 12px;">Value</th>
+      <th style="padding:8px 0;">Signal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #222;">
+      <td style="padding:8px 12px 8px 0;">
+        <strong>Vocal fundamental deviation</strong><br>
+        <small style="color:#888;">Distance from biological mean (~130 Hz). High = tonal centre far from resting human voice.</small>
+      </td>
+      <td style="padding:8px 12px;">{sa.vocal_fundamental_deviation_hz:+.1f} Hz</td>
+      <td style="padding:8px 0;">{_bar(vocal_dev_normalised)}</td>
+    </tr>
+    <tr style="border-bottom:1px solid #222;">
+      <td style="padding:8px 12px 8px 0;">
+        <strong>Solfeggio grid proximity</strong><br>
+        <small style="color:#888;">How closely prominent frequencies sit within the 396–852 Hz grid. Nearest: {_escape(sa.nearest_solfeggio_name)} ({sa.nearest_solfeggio_hz:.0f} Hz).</small>
+      </td>
+      <td style="padding:8px 12px;">{sa.solfeggio_grid_proximity:.3f}</td>
+      <td style="padding:8px 0;">{_bar(sa.solfeggio_grid_proximity)}</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 12px 8px 0;">
+        <strong>Institutional distance</strong><br>
+        <small style="color:#888;">0 = biologically centred, 1 = fully anchored to A440 standard. The 1939 ISO standardisation sits at 1.0.</small>
+      </td>
+      <td style="padding:8px 12px;">{sa.institutional_distance:.3f}</td>
+      <td style="padding:8px 0;">{_bar(sa.institutional_distance)}</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style="color:#aaa;font-style:italic;margin-top:8px;">{_escape(sa.alignment_reading)}</p>
+</section>"""
+
+
+def _hmoe_section(psychosomatic: PsychosomaticProfile, trajectory: TrajectoryProfile) -> str:
+    """
+    Section 6: HMoE (Heterogeneous Multiplicity of Evidence) framing.
+
+    Explains how creative_residue, authentic_emission_score, and LSII each feed
+    into the HMoE corpus metric. Per-record inputs only — corpus-level HMoE
+    requires seedbank depth and is computed via kindpress.reason.
+    """
+    cr = psychosomatic.creative_residue
+    ae = psychosomatic.authentic_emission_score
+    ms = psychosomatic.manufacturing_score
+    lsii = trajectory.lsii_result.lsii
+
+    if cr > 0.65:
+        cr_reading = "High creative residue — this piece carries significant signal beyond genre convention. It contributes strong discriminating power to any corpus it joins."
+    elif cr > 0.35:
+        cr_reading = "Moderate creative residue — partially genre-conventional, partially distinctive. Contributes measurable but not exceptional HMoE."
+    else:
+        cr_reading = "Low creative residue — signal closely matches genre/era conventions. k accounts for most of the variation; low HMoE contribution."
+
+    if ae > 0.65:
+        ae_reading = "Authentic emission is strong — the residue is corroborated. Information density is real, not noise."
+    elif ae > 0.35:
+        ae_reading = "Moderate authentic emission — residue is partially corroborated. Some distinctive signal may be performance variation rather than deliberate authorship."
+    else:
+        ae_reading = "Low authentic emission — residue may reflect noise or production artifacts rather than genuine creative signal."
+
+    if lsii > 0.4:
+        lsii_reading = f"LSII of {lsii:.3f} is significant — hidden residue amplifies toward the end. The creator's authentic signal may be most concentrated in the final quarter."
+    else:
+        lsii_reading = f"LSII of {lsii:.3f} is low — creative residue is distributed consistently across the piece."
+
+    return (
+        '<h2>HMoE Reading</h2>'
+        '<p class="section-explain">'
+        'HMoE — <em>Heterogeneous Multiplicity of Evidence</em> — measures the information richness '
+        'of a corpus. Formula: <strong>var(creative_residue) &times; mean(effective_n)</strong>. '
+        'Each piece contributes through the three signals below. A piece with high creative residue, '
+        'corroborated by authentic emission, expands the HMoE of any corpus it enters.'
+        '</p>'
+        '<h3>Creative Residue — primary m input</h3>'
+        '<p class="section-explain">What remains after known genre and era signatures are subtracted. The raw m in Φ = km<sup>n</sup>.</p>'
+        + _bar_row("Creative residue", cr, "#7ab8f5")
+        + f'<p class="section-explain" style="margin-top:4px">{_escape(cr_reading)}</p>'
+        '<h3>Authentic Emission — Δ corroboration</h3>'
+        '<p class="section-explain">Corroborates that the residue is genuine creative signal, not extraction noise.</p>'
+        + _bar_row("Authentic emission", ae, "#7ab8f5")
+        + _bar_row("Manufacturing score (inverse)", ms, "#F5A623")
+        + f'<p class="section-explain" style="margin-top:4px">{_escape(ae_reading)}</p>'
+        '<h3>LSII — temporal residue signal</h3>'
+        '<p class="section-explain">The late-song inversion is a form of m with temporal specificity.</p>'
+        + f'<p class="section-explain">{_escape(lsii_reading)}</p>'
+        '<p class="section-explain" style="margin-top:14px;font-style:normal;color:#444;border-left:2px solid #2a2a2a;padding-left:10px">'
+        '<strong>Corpus-level HMoE</strong> requires multiple deposited records. '
+        'Run <code>kindpress.reason.compute_tag_calibration(tag_name)</code> once this piece is in the seedbank.'
+        '</p>'
+    )
 
 
 def _technical_table(trajectory: TrajectoryProfile) -> str:

@@ -1,0 +1,132 @@
+{
+  "version": "1.0",
+  "description": "Instrument family spectral fingerprints. Used to estimate which instrument families are present from frequency and temporal patterns.",
+  "instrument_families": {
+    "kick_drum": {
+      "name": "Kick Drum",
+      "frequency_range_hz": [40, 150],
+      "spectral_centroid_hz": [60, 100],
+      "attack_ms": [1, 8],
+      "transient_character": "sharp",
+      "four_on_the_floor_bpm_range": [118, 145],
+      "psychosomatic_note": "Sub-bass kick entrains the body's autonomic systems. At 120-140 BPM it approaches resting heart rate acceleration zone. The four-on-the-floor pattern is the most widely deployed body-priming pattern in recorded music.",
+      "manufacturing_indicator": "Perfectly grid-aligned kick at 120-140 BPM with sub-bass extension is a body priming signature. Context determines whether this is communal or extractive."
+    },
+    "snare_drum": {
+      "name": "Snare Drum",
+      "frequency_range_hz": [150, 8000],
+      "spectral_centroid_hz": [1000, 3000],
+      "attack_ms": [1, 5],
+      "transient_character": "sharp with sustain",
+      "gated_reverb_signature": "1980s signature: sharp attack, zero sustain, brief noise burst",
+      "psychosomatic_note": "Snare placement relative to the grid is one of the primary groove deviation markers. Human snare lands slightly behind the beat (pocket). Machine snare is exactly on grid.",
+      "authenticity_marker": "variance_in_attack_time_ms > 5"
+    },
+    "hi_hat": {
+      "name": "Hi-Hat",
+      "frequency_range_hz": [4000, 18000],
+      "spectral_centroid_hz": [8000, 14000],
+      "transient_character": "very short",
+      "trap_pattern_signature": "triplet 16th-note rolls, rapid open/closed variation",
+      "psychosomatic_note": "Hi-hat patterns carry the micro-rhythmic information of groove. Trap hi-hats create a particular nervous-system response — rapid irregular stimulation in the high frequencies."
+    },
+    "bass_guitar": {
+      "name": "Bass Guitar",
+      "frequency_range_hz": [40, 300],
+      "spectral_centroid_hz": [80, 200],
+      "harmonic_structure": "strong fundamental with 2nd and 3rd harmonics",
+      "psychosomatic_note": "The low-frequency anchor. Felt in the chest and abdomen before it is heard. Bass presence is the most body-primary instrument family."
+    },
+    "electric_guitar": {
+      "name": "Electric Guitar",
+      "frequency_range_hz": [80, 8000],
+      "spectral_centroid_hz": [1500, 4500],
+      "distortion_signature": "harmonic saturation above 2kHz, even harmonics = warmth, odd = harshness",
+      "psychosomatic_note": "Distorted guitar's odd-harmonic content creates perceived bite and aggression. The same physical sensation as raised voice."
+    },
+    "acoustic_guitar": {
+      "name": "Acoustic Guitar",
+      "frequency_range_hz": [80, 7000],
+      "spectral_centroid_hz": [800, 2500],
+      "resonance_character": "body resonance below 300Hz",
+      "authenticity_marker": "string noise, fret noise, body tap audible",
+      "psychosomatic_note": "Acoustic guitar's presence in recording carries physical reality markers (string noise, body movement). Their presence is an authenticity indicator — they weren't cleaned out."
+    },
+    "piano": {
+      "name": "Piano / Keys",
+      "frequency_range_hz": [28, 4200],
+      "spectral_centroid_hz": [300, 2000],
+      "harmonic_complexity": "high — rich overtone structure",
+      "psychosomatic_note": "Piano's wide frequency range and harmonic complexity creates the most information-dense tonal source. Piano-led harmonic structure indicates deliberate compositional authorship."
+    },
+    "synthesiser": {
+      "name": "Synthesiser",
+      "frequency_range_hz": [20, 20000],
+      "spectral_centroid_hz": "variable — defines by patch",
+      "era_signatures": {
+        "early_analogue_1970s": "warm, slightly unstable oscillators, filter sweep artifacts",
+        "digital_1980s": "clean, bright, static timbre, FM artifacts",
+        "soft_synth_2000s": "precise, ultra-clean, wider harmonic options",
+        "modular_contemporary": "complex, evolving, often harsh or unusual timbres"
+      },
+      "psychosomatic_note": "Synthesiser timbres carry era signatures strongly. The specific artifacts of vintage analogue (filter resonance, oscillator instability) vs clean digital creates different somatic responses — warmth vs precision."
+    },
+    "voice": {
+      "name": "Human Voice",
+      "frequency_range_hz": [80, 8000],
+      "fundamental_range_hz": {
+        "bass": [80, 220],
+        "baritone": [96, 260],
+        "tenor": [130, 520],
+        "mezzo_soprano": [166, 880],
+        "soprano": [260, 1047]
+      },
+      "formant_frequencies": {
+        "F1": [270, 730],
+        "F2": [840, 2290]
+      },
+      "authenticity_markers": ["breath sounds", "vibrato instability", "micro-intonation variance", "lip smacks", "sibilance natural vs processed"],
+      "manufacturing_markers": ["pitch correction artifacts", "zero micro-intonation variance", "uniform vibrato rate"],
+      "psychosomatic_note": "The voice is the most honest instrument. It carries the autonomic state of the body that produced it — laryngeal tension, breath holding, suppressed vibrato. These are signals the voice cannot fully conceal."
+    },
+    "drums_acoustic": {
+      "name": "Acoustic Drums",
+      "frequency_range_hz": [40, 10000],
+      "room_character": "room acoustics audible in overheads and room mics",
+      "authenticity_markers": ["room ambience", "bleed between instruments", "velocity variation between hits", "stick noise"],
+      "psychosomatic_note": "Acoustic drums carry the physical presence of a body in space. The room acoustics mean the listener's body is placed in the same acoustic environment as the performer."
+    },
+    "drum_machine": {
+      "name": "Drum Machine",
+      "frequency_range_hz": [40, 12000],
+      "characteristic_models": {
+        "TR_808": "heavy sub-bass kick decay, rimshot, cowbell",
+        "TR_909": "punchy kick, sharp snare, metallic hi-hats",
+        "LinnDrum": "sampled acoustic drums, 1980s pop signature",
+        "MPC": "sampled breakbeats, hip-hop signature"
+      },
+      "groove_deviation_range_ms": [0, 10],
+      "psychosomatic_note": "Drum machine timing is intentional — it reflects a production choice, not a physical limit. Context determines whether machine-precise rhythm serves the music or removes the body's rhythm from it."
+    },
+    "strings": {
+      "name": "Strings / Orchestral",
+      "frequency_range_hz": [55, 4200],
+      "spectral_centroid_hz": [400, 2000],
+      "psychosomatic_note": "Strings create sympathetic resonance responses. The human auditory system has ancestral recognition of bowed instruments — associated with human vocal emotion. Orchestral strings in commercial production are a prestige signal deployed to elevate manufactured content."
+    },
+    "horns_brass": {
+      "name": "Horns / Brass",
+      "frequency_range_hz": [55, 2500],
+      "spectral_centroid_hz": [500, 2000],
+      "presence_lineages": ["funk", "disco", "chicago_blues", "gospel_soul_roots"],
+      "psychosomatic_note": "Brass section presence usually indicates ensemble recording — multiple humans in a room. This creates natural dynamic covariance. Also carries cultural markers of collective celebration and community."
+    },
+    "sub_bass_electronic": {
+      "name": "Sub-Bass Electronic",
+      "frequency_range_hz": [20, 80],
+      "felt_not_heard_threshold_hz": 60,
+      "psychosomatic_note": "Sub-bass below 60Hz is felt more than heard — primarily a physical experience. This is the most direct body-entrainment tool in modern production. Heavy sub-bass (>-20dB in the 20-60Hz range) is a direct somatic intervention.",
+      "priming_indicator": "sub_bass_energy_ratio > 0.3 with four_on_the_floor kick = body priming signature"
+    }
+  }
+}

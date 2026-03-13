@@ -8,6 +8,7 @@ The seedbank is the growing reference library that makes comparison possible.
 Each deposit sharpens the baseline and extends the authentic creative record.
 """
 
+import hashlib
 import json
 import uuid
 import os
@@ -171,6 +172,19 @@ def deposit(
 
     # The birth reading — the first universe this record is born into.
     # All future k-revisions fork from this checkpoint rather than overwriting it.
+    #
+    # reading_input_hash: SHA-256 of the canonical input values used to compute this
+    # reading. Proves exactly what data was present at computation time — enabling
+    # future audits to verify that the reading was not retroactively altered.
+    _reading_inputs = json.dumps(
+        {
+            "creative_residue": creative_residue,
+            "authentic_emission_score": authentic_emission_score,
+            "manufacturing_score": manufacturing_score,
+            "baseline_version": computed_baseline_version,
+        },
+        sort_keys=True,
+    )
     initial_reading = {
         "creative_residue": creative_residue,
         "authentic_emission_score": authentic_emission_score,
@@ -181,6 +195,7 @@ def deposit(
         "is_current": True,
         "computation_source": "deposit",
         "residue_delta_from_prior": None,
+        "reading_input_hash": hashlib.sha256(_reading_inputs.encode("utf-8")).hexdigest(),
     }
 
     record = SeedbankRecord(
@@ -225,6 +240,24 @@ def deposit(
             filename=filename,
             baseline_version=computed_baseline_version,
             tags=all_tags,
+        )
+    except Exception:
+        pass
+    # Append to the CDC hash-chained audit log.
+    try:
+        from seedbank.cdc import append_event as _cdc_append
+        _cdc_append(
+            "deposit",
+            record_id,
+            {
+                "filename": filename,
+                "deposited_at": deposited_at,
+                "baseline_version": computed_baseline_version,
+                "tags": all_tags,
+                "lsii_score": lsii_score,
+                "authentic_emission_score": authentic_emission_score,
+                "reading_input_hash": initial_reading["reading_input_hash"],
+            },
         )
     except Exception:
         pass
