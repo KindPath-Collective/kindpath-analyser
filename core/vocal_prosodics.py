@@ -39,7 +39,13 @@ class VocalProsodicProfile:
     vibrato_rate_hz: float = 0.0        # Natural vibrato ~5-7Hz; outside = tension or artifice
     vibrato_depth_cents: float = 0.0    # Depth of pitch modulation
     vibrato_consistency: float = 0.0    # 0-1: consistent = trained/relaxed, erratic = tension
-    tuning_deviation_cents: float = 0.0  # Deviation from equal temperament
+    tuning_deviation_cents: float = 0.0  # Deviation from equal temperament (A440)
+    vocal_fundamental_deviation_hz: float = 0.0     # Distance from mean human vocal fundamental (~130 Hz).
+                                                    # Near zero = voice sits at the biological reference.
+                                                    # Far positive = unusually high-pitched register.
+                                                    # Far negative = unusually low, sub-fundamental.
+    vocal_fundamental_deviation_cents: float = 0.0  # Same deviation in cents (100 = 1 semitone).
+                                                    # Useful for cross-track comparison.
 
     # ── Breath and tension markers ─────────────────────────────────────────
     breath_density: float = 0.0         # Audible breaths per minute
@@ -235,6 +241,18 @@ def _fill_pitch_features(
     bins = np.round(midi_notes).astype(int)
     deviations = (midi_notes - bins) * 100.0  # cents
     profile.tuning_deviation_cents = float(np.mean(np.abs(deviations)))
+
+    # Vocal fundamental deviation from mean human vocal fundamental.
+    # ~130 Hz (C3) is the approximate global mean fundamental for adult voices.
+    # This is the biological reference frequency — not the institutional A440.
+    # Distance from this reference tells us how far the tonal centre sits from
+    # the nervous system's primary resonance range for social co-regulation.
+    HUMAN_VOCAL_FUNDAMENTAL_HZ = 130.0
+    profile.vocal_fundamental_deviation_hz = float(profile.pitch_mean_hz - HUMAN_VOCAL_FUNDAMENTAL_HZ)
+    if profile.pitch_mean_hz > 0 and HUMAN_VOCAL_FUNDAMENTAL_HZ > 0:
+        profile.vocal_fundamental_deviation_cents = float(
+            1200.0 * np.log2(profile.pitch_mean_hz / HUMAN_VOCAL_FUNDAMENTAL_HZ)
+        )
 
     return profile
 

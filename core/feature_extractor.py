@@ -44,6 +44,9 @@ class SpectralFeatures:
     flatness_mean: float        # 0=tonal, 1=noise-like
     mfcc: list                  # 13 MFCCs - the timbral fingerprint
     harmonic_ratio: float       # Harmonic vs percussive energy ratio
+    infrasonic_energy_ratio: float  # Sub-20Hz energy as proportion of total — biological load proxy.
+                                    # High = significant infrasonic content; autonomic activation without
+                                    # conscious perception. See FREQUENCY_FIELD_ARCHITECTURE.md.
 
 
 @dataclass
@@ -179,6 +182,17 @@ def _extract_spectral(y: np.ndarray, sr: int) -> SpectralFeatures:
     t = np.arange(len(centroid))
     centroid_trend = float(np.polyfit(t, centroid, 1)[0]) if len(t) > 1 else 0.0
 
+    # Infrasonic energy: proportion of total power below 20 Hz.
+    # Digital recordings rarely have true infrasound, but sub-bass production
+    # artefacts and mastering rumble often push energy into this range.
+    # This is the acoustic fingerprint of biological load imposed on the listener.
+    n_fft = S.shape[0] * 2 - 2  # infer n_fft from STFT bins
+    freq_bins = librosa.fft_frequencies(sr=sr, n_fft=n_fft)
+    infrasonic_mask = freq_bins < 20.0
+    total_power = float(np.sum(S ** 2)) + 1e-10
+    infrasonic_power = float(np.sum(S[infrasonic_mask, :] ** 2)) if np.any(infrasonic_mask) else 0.0
+    infrasonic_energy_ratio = infrasonic_power / total_power
+
     return SpectralFeatures(
         centroid_mean=float(np.mean(centroid)),
         centroid_std=float(np.std(centroid)),
@@ -191,6 +205,7 @@ def _extract_spectral(y: np.ndarray, sr: int) -> SpectralFeatures:
         flatness_mean=float(np.mean(flatness)),
         mfcc=[float(np.mean(mfcc[i])) for i in range(13)],
         harmonic_ratio=harmonic_ratio,
+        infrasonic_energy_ratio=infrasonic_energy_ratio,
     )
 
 

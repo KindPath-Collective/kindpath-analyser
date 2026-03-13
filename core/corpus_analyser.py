@@ -267,8 +267,19 @@ def _compute_cultural_pressure_index(
     compression: List[float],
 ) -> List[float]:
     """
-    Cultural pressure: high manufacturing + high compression (low crest factor) = high pressure.
-    Crest factor inverted: lower crest factor = more compression = higher pressure.
+    The acoustic record of the UTC grid pressing down.
+
+    As the institutional temporal grid deepens its synchronisation over biological time,
+    music records the compression: dynamic range narrows (loudness war), creative residue
+    falls (formula work displaces authentic choice), groove deviation drops (quantisation
+    replaces human timing). All moving in the same direction, together, over decades.
+
+    This index is that convergence, expressed as a single 0–1 pressure score per period.
+    Rising cultural_pressure_index = more compression. Falling = decompression / restoration.
+
+    Two components:
+    - manufacturing_score: how much of the signal is engineered delivery rather than authentic emission
+    - compression_norm: crest factor inverted — lower crest factor = more loudness-war compression
     """
     if not manufacturing:
         return []

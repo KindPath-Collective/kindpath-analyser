@@ -1,0 +1,193 @@
+{
+  "fingerprint/generative-error": {
+    "name": "fingerprint/generative-error",
+    "category": "fingerprint",
+    "current_version": 1,
+    "versions": [
+      {
+        "version": 1,
+        "defined_at": "2026-03-12T23:21:31.244115+00:00",
+        "description": "A deviation that carries structural logic — it reveals a genuine gap in the model or the material rather than random noise. The error has a fingerprint: it follows the geometry of the system rather than disrupting it arbitrarily.",
+        "scope": "Field practice, documentation, analysis anomalies",
+        "revision_reason": null,
+        "revision_source": null,
+        "examples": [
+          "A sensor reading that drifts in response to soil compaction in a specific site",
+          "A PR that exposes ambiguity in a field guide by failing to apply it in a real community context"
+        ],
+        "anti_examples": [
+          "A typo",
+          "A corrupted data file",
+          "A configuration mistake"
+        ]
+      }
+    ],
+    "deprecated": false,
+    "deprecated_reason": null,
+    "superseded_by": null
+  },
+  "fingerprint/context-local": {
+    "name": "fingerprint/context-local",
+    "category": "fingerprint",
+    "current_version": 1,
+    "versions": [
+      {
+        "version": 1,
+        "defined_at": "2026-03-12T23:21:31.247796+00:00",
+        "description": "A contribution or signal that is specific to a particular place, community, ecological context, or cultural moment. It should not be generalised away — its specificity is the value.",
+        "scope": "Field contributions, site-specific data, community-specific practice",
+        "revision_reason": null,
+        "revision_source": null,
+        "examples": [
+          "Northern Rivers flood-season soil readings",
+          "Nimbin community governance patterns",
+          "A field guide interpretation that only applies to clay-rich coastal soils"
+        ],
+        "anti_examples": [
+          "A universal algorithmic improvement",
+          "A documentation fix with no geographic or community specificity"
+        ]
+      }
+    ],
+    "deprecated": false,
+    "deprecated_reason": null,
+    "superseded_by": null
+  },
+  "signal/miscontextualised": {
+    "name": "signal/miscontextualised",
+    "category": "signal",
+    "current_version": 1,
+    "versions": [
+      {
+        "version": 1,
+        "defined_at": "2026-03-12T23:21:31.249330+00:00",
+        "description": "Existing material that is technically accurate but not legible or applicable in the real-world context encountered. The map is correct but oriented to the wrong territory.",
+        "scope": "Documentation, field guides, analysis outputs",
+        "revision_reason": null,
+        "revision_source": null,
+        "examples": [
+          "A pilot guide that assumes infrastructure not available in rural settings",
+          "A metric definition that works for urban cohorts but not remote communities"
+        ],
+        "anti_examples": [
+          "Material that is simply wrong — that's a different category"
+        ]
+      }
+    ],
+    "deprecated": false,
+    "deprecated_reason": null,
+    "superseded_by": null
+  },
+  "signal/extractive-precision": {
+    "name": "signal/extractive-precision",
+    "category": "signal",
+    "current_version": 1,
+    "versions": [
+      {
+        "version": 1,
+        "defined_at": "2026-03-12T23:21:31.254340+00:00",
+        "description": "A place where the system is too rigid, template-heavy, or efficiency-oriented at the expense of adaptability, authentic signal, or community agency. Optimisation that eats its own margin of error.",
+        "scope": "Process design, automation, contribution requirements, data pipeline design",
+        "revision_reason": null,
+        "revision_source": null,
+        "examples": [
+          "A contribution template so strict it filters out valid field context",
+          "An analysis pipeline that smooths out anomalies before they can be examined",
+          "A governance process that requires uniform documentation across diverse community contexts"
+        ],
+        "anti_examples": [
+          "Well-designed structure that enables rather than constrains"
+        ]
+      }
+    ],
+    "deprecated": false,
+    "deprecated_reason": null,
+    "superseded_by": null
+  },
+  "experiment/noise": {
+    "name": "experiment/noise",
+    "category": "experiment",
+    "current_version": 1,
+    "versions": [
+      {
+        "version": 1,
+        "defined_at": "2026-03-12T23:21:31.258073+00:00",
+        "description": "A failed attempt whose conditions and failure mode are worth preserving. Not random error — a structured experiment that produced unexpected results in a specific context. The negative result is data.",
+        "scope": "Technical experiments, field trials, analysis attempts",
+        "revision_reason": null,
+        "revision_source": null,
+        "examples": [
+          "A stem separation attempt that failed for a specific audio format",
+          "A sensor integration that produced unstable readings under specific temperature conditions"
+        ],
+        "anti_examples": [
+          "A broken prototype with no documented conditions",
+          "An incomplete implementation with no notes"
+        ]
+      }
+    ],
+    "deprecated": false,
+    "deprecated_reason": null,
+    "superseded_by": null
+  },
+  "high_lsii": {
+    "name": "high_lsii",
+    "category": "fingerprint",
+    "current_version": 1,
+    "versions": [
+      {
+        "version": 1,
+        "defined_at": "2026-03-12T23:21:31.261219+00:00",
+        "description": "Late-song inversion index above 0.4 — the final quarter diverges meaningfully from the Q1-Q3 trajectory. Something changed in the last section that was not established by the frame the piece was built in.",
+        "scope": "Music analysis records",
+        "revision_reason": null,
+        "revision_source": null,
+        "examples": [],
+        "anti_examples": []
+      }
+    ],
+    "deprecated": false,
+    "deprecated_reason": null,
+    "superseded_by": null
+  },
+  "natural_dynamics": {
+    "name": "natural_dynamics",
+    "category": "fingerprint",
+    "current_version": 1,
+    "versions": [
+      {
+        "version": 1,
+        "defined_at": "2026-03-12T23:21:31.265512+00:00",
+        "description": "Crest factor above 12dB and dynamic range above 12dB. Dynamics are preserved — the production chose listener experience and authentic signal over loudness or compression.",
+        "scope": "Music analysis records",
+        "revision_reason": null,
+        "revision_source": null,
+        "examples": [],
+        "anti_examples": []
+      }
+    ],
+    "deprecated": false,
+    "deprecated_reason": null,
+    "superseded_by": null
+  },
+  "independent": {
+    "name": "independent",
+    "category": "context",
+    "current_version": 1,
+    "versions": [
+      {
+        "version": 1,
+        "defined_at": "2026-03-12T23:21:31.268034+00:00",
+        "description": "Released or produced independently of major label infrastructure. Not a quality judgment — a context flag that affects baseline comparison (independent releases are not measured against commercial production standards).",
+        "scope": "Music analysis records, creative work contexts",
+        "revision_reason": null,
+        "revision_source": null,
+        "examples": [],
+        "anti_examples": []
+      }
+    ],
+    "deprecated": false,
+    "deprecated_reason": null,
+    "superseded_by": null
+  }
+}
