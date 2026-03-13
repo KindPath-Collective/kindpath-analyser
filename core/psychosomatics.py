@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import numpy as np
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict
+from typing import Any, List, Optional, Dict
 
 from core.divergence import TrajectoryProfile, LatesonginversionResult
 from core.fingerprints import FingerprintReport
@@ -83,6 +83,12 @@ class PsychosomaticProfile:
     # quarter_features were available during profile construction.
     solfeggio_alignment: Optional[SolfeggioAlignment] = None
 
+    # Kindfluence bridge — comprehension mechanic analysis and counter-mechanic vectors.
+    # syntropy_repair_vectors contains the KindPath counter-mechanic for each detected
+    # extractive pattern. These are actionable vectors for bending the field back.
+    syntropy_repair_vectors: List[str] = field(default_factory=list)
+    influence_chain: Optional[Any] = None  # InfluenceChain from core.influence_mapper
+
     # Narrative — the synthetic elder's voice
     somatic_summary: str = ''           # What this is doing to a body
     mechanism_summary: str = ''         # Conditioning mechanics if detected
@@ -96,6 +102,7 @@ def build_psychosomatic_profile(
     fingerprints: FingerprintReport,
     stem_features: Optional[Dict] = None,
     solfeggio_alignment: Optional[SolfeggioAlignment] = None,
+    influence_chain: Optional[Any] = None,
 ) -> PsychosomaticProfile:
     """
     Synthesise all analysis into a psychosomatic profile.
@@ -104,6 +111,8 @@ def build_psychosomatic_profile(
         trajectory: TrajectoryProfile from core.divergence
         fingerprints: FingerprintReport from core.fingerprints
         stem_features: Optional dict of stem_name -> SegmentFeatures
+        solfeggio_alignment: Optional SolfeggioAlignment from feature_extractor
+        influence_chain: Optional InfluenceChain from core.influence_mapper
     """
     lsii = trajectory.lsii_result
 
@@ -175,6 +184,8 @@ def build_psychosomatic_profile(
         manufacturing_score=manufacturing,
         creative_residue=creative_residue,
         solfeggio_alignment=solfeggio_alignment,
+        syntropy_repair_vectors=influence_chain.syntropy_repair_vectors if influence_chain else [],
+        influence_chain=influence_chain,
         somatic_summary=somatic_summary,
         mechanism_summary=mechanism_summary,
         elder_reading=elder_reading,
