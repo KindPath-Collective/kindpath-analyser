@@ -35,6 +35,26 @@ sibling module, applying the same conceptual architecture to a different domain.
 
 See kindpath-analyser/docs/KINDPRESS_SPEC.md for the k/Δ model reference.
 See kindpath-canon/AGENT_COMMUNITY_CHARTER.md §6+§7 for the doctrine.
+
+Four-Pillar Principle (applied to agent reasoning):
+  The same inference-vs-insight distinction that governs audio HMoE applies
+  to agent reasoning quality. An agent session that only engages one channel
+  of reasoning is producing inferences, not insights.
+
+  The four pillars map to agent behaviour as follows:
+    Somatic    → decisiveness_score: the agent's felt-sense clarity —
+                 how resolved vs. deferred its actions were.
+    Intellectual → mean_alternatives_considered: logical/analytical depth —
+                 how many possibilities were examined before choosing.
+    Emotional  → collaboration_score: relational engagement — how actively
+                 the agent exchanged with other domains.
+    Spiritual  → doctrine_alignment: purpose coherence — whether the agent's
+                 calibration reflects genuine alignment vs. surface compliance.
+
+  pillar_balance_score (0–1) measures how evenly these four channels
+  contributed to the session. A score near 1.0 means the agent was
+  decisive, analytical, collaborative, AND doctrine-aligned. Near 0.0
+  means performance was dominated by a single channel.
 """
 
 from __future__ import annotations
@@ -245,6 +265,19 @@ class InteractionDelta:
     # How close mean_confidence is to the empirical resolve rate
     # (if mean_confidence=0.8 but 40% uncertainties remain, calibration is poor)
 
+    pillar_balance_score: float = 0.0
+    # Four-pillar balance: how evenly this session engaged all four reasoning channels.
+    # Derived from the normalised spread of:
+    #   Somatic      → decisiveness_score       (resolved presence, clarity of action)
+    #   Intellectual → mean_alternatives_score  (analytical depth, alternatives examined)
+    #   Emotional    → collaboration_score       (relational exchange, cross-domain activity)
+    #   Spiritual    → calibration_score         (doctrine alignment, confidence accuracy)
+    #
+    # Score = 1.0 - std(normalised_pillars) / 0.5
+    # Near 1.0: all four channels contributed equally — insight-grade reasoning.
+    # Near 0.0: performance dominated by one channel — inference-grade.
+    # This is the inference vs. insight principle applied to agent behaviour.
+
     # Raw signal lists for downstream analysis
     thinking_signals: list[ThinkingSignal] = field(default_factory=list)
     uncertainty_signals: list[UncertaintySignal] = field(default_factory=list)
@@ -358,6 +391,7 @@ def diff(packet_a: InteractionPacket, packet_b: InteractionPacket) -> dict:
         "decisiveness_score": _metric_change(da.decisiveness_score, db.decisiveness_score),
         "collaboration_score": _metric_change(da.collaboration_score, db.collaboration_score),
         "calibration_score": _metric_change(da.calibration_score, db.calibration_score),
+        "pillar_balance_score": _metric_change(da.pillar_balance_score, db.pillar_balance_score),
         "_agent_domain_a": packet_a.context.agent_domain,
         "_agent_domain_b": packet_b.context.agent_domain,
         "_same_agent": packet_a.context.agent_domain == packet_b.context.agent_domain,
@@ -396,6 +430,7 @@ def aggregate(packets: list[InteractionPacket]) -> dict:
         "community_decisiveness": _mean([d.decisiveness_score for d in deltas]),
         "community_collaboration": _mean([d.collaboration_score for d in deltas]),
         "community_calibration": _mean([d.calibration_score for d in deltas]),
+        "community_pillar_balance": _mean([d.pillar_balance_score for d in deltas]),
         "mean_open_uncertainties_per_session": _mean([float(d.open_uncertainty_count) for d in deltas]),
         "community_uncertainty_type_distribution": all_uncertainty_types,
         "highest_uncertainty_type": max(all_uncertainty_types, key=all_uncertainty_types.get) if all_uncertainty_types else None,
@@ -465,6 +500,19 @@ def _compute_delta(
     resolve_rate = 1.0 - (open_count / n_uncertainty) if n_uncertainty else 1.0
     calibration = max(0.0, 1.0 - abs(mean_conf - resolve_rate))
 
+    # ── Four-Pillar balance ──
+    # Normalise mean_alternatives_considered to 0-1 (clamp at 5 alternatives = 1.0)
+    # to make it comparable to the other 0-1 scores.
+    intellectual_score = min(mean_alts / 5.0, 1.0)
+    pillar_scores = [decisiveness, intellectual_score, collaboration, calibration]
+    if len(pillar_scores) > 1:
+        pillar_std = statistics.stdev(pillar_scores)
+        # std of 0 = perfect balance; std of 0.5 = extreme imbalance
+        # Scale: balance_score = 1 - (std / 0.5), clamped to [0, 1]
+        pillar_balance = max(0.0, 1.0 - (pillar_std / 0.5))
+    else:
+        pillar_balance = 0.0
+
     return InteractionDelta(
         thinking_trace_count=n_thinking,
         uncertainty_deposit_count=n_uncertainty,
@@ -481,6 +529,7 @@ def _compute_delta(
         decisiveness_score=round(decisiveness, 3),
         collaboration_score=round(collaboration, 3),
         calibration_score=round(calibration, 3),
+        pillar_balance_score=round(pillar_balance, 3),
         thinking_signals=thinking,
         uncertainty_signals=uncertainties,
         insight_signals=insights,
