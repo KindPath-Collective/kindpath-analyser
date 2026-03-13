@@ -26,15 +26,29 @@ This is an Expectation-Maximisation loop at the meaning layer:
     Iterate until HMoE (information density) is maximised.
 
 HMoE here is the Heterogeneous Multiplicity of Evidence — the information
-richness of a compressed corpus. It is measured as:
-    var(creative_residue) * mean(effective_n)
+richness of a compressed corpus. It is measured in two forms:
 
-where var(residue) captures discriminating power (how distinct each record is)
-and mean(effective_n) captures lineage depth (how far into the living, non-linear
-regime the corpus has progressed).
+    Scalar HMoE (original):
+        Φ = var(creative_residue) * mean(effective_n)
+    where var(residue) captures discriminating power and mean(effective_n)
+    captures lineage depth.
 
-A high HMoE corpus is one where k has removed all systematic shared meaning,
-leaving each record with a genuinely unique, information-dense Δ.
+    Four-Pillar HMoE (extended):
+        Φ_4p = mean(var_per_pillar) * mean(effective_n)
+    where var_per_pillar averages discrimination across four evidence channels:
+        - Spiritual: creative_residue, lsii_score, authentic_emission_score
+        - Intellectual: manufacturing_score, tempo_bpm
+        - Emotional: valence, arousal (when present)
+        - Somatic: dynamic_range_db, crest_factor_db, groove_deviation_ms (when present)
+
+    A high scalar HMoE but low Φ_4p signals single-pillar compression:
+    the corpus is only well-described from the Spiritual dimension. The
+    analysis has explanatory power but is not holistically grounded.
+
+    This extends the inference vs. insight principle from the Four Pillars
+    of Holistic Perception into the k-calibration layer. An insight requires
+    convergence across multiple pillars. A corpus that only discriminates on
+    one axis is still producing inferences, not insights.
 """
 
 import math
@@ -49,6 +63,32 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import seedbank.index as _idx
 import seedbank.tags_registry as _tags
 from seedbank.recompute import effective_n, corpus_effective_n_distribution
+
+
+# ── Four Pillars field mapping ────────────────────────────────────────────────
+# Each pillar cluster maps to the seedbank record fields that give evidence
+# for that dimension of experience / analysis.
+#
+# Spiritual: authenticity, meaning, the late-song protest signal — what
+#            remains after all known formula elements are subtracted.
+# Intellectual: production logic, technique era, structural choices —
+#               what the maker decided with deliberate craft knowledge.
+# Emotional: valence, arousal, tension — what the music does to the
+#            feeling layer of a listener. Often absent in basic records.
+# Somatic: physical dynamics, rhythm, compression — what the music does
+#          to the body. Physical rhythm, breath, tactile presence.
+#
+# A corpus that discriminates well on all four pillars has explanatory
+# richness across every mode of human experience. A corpus that only
+# discriminates on one axis (typically Spiritual, since creative_residue
+# drives the standard HMoE) is still producing inferences, not insights.
+
+_PILLAR_FIELDS: dict[str, list[str]] = {
+    "spiritual": ["creative_residue", "lsii_score", "authentic_emission_score"],
+    "intellectual": ["manufacturing_score", "tempo_bpm"],
+    "emotional": ["valence", "arousal", "tension_resolution_ratio"],
+    "somatic": ["dynamic_range_db", "crest_factor_db", "groove_deviation_ms"],
+}
 
 
 @dataclass
@@ -100,9 +140,77 @@ class DeltaDistribution:
     # Φ = var(Δ) * mean(effective_n) — the combined measure of discrimination × depth
     hmoe: float
 
+    # Four-Pillar HMoE: discrimination tested across all four evidence channels.
+    # Φ_4p = mean(var_per_pillar) * mean(effective_n)
+    # A corpus where only one pillar discriminates well is producing inferences,
+    # not insights — the Four Pillars principle applied to k-calibration.
+    # hmoe_4p of 0.0 means no pillar data was available beyond Spiritual.
+    pillar_variances: dict = field(default_factory=dict)
+    # Keys: "spiritual", "intellectual", "emotional", "somatic"
+    # Values: mean variance across the fields in that pillar (NaN if no coverage)
+    pillar_coverage: dict = field(default_factory=dict)
+    # Fraction of records (0–1) that have at least one field from each pillar
+    hmoe_4p: float = 0.0
+    # Four-pillar HMoE. Lower than hmoe when insight is single-pillar dominated.
+
     # Calibration assessment
-    calibration_score: float   # 0–1: 1.0 = well-calibrated, 0.0 = needs revision
+    calibration_score: float = 0.0  # 0–1: 1.0 = well-calibrated, 0.0 = needs revision
     calibration_notes: list = field(default_factory=list)
+
+
+def _compute_pillar_variances(
+    records: list[dict],
+) -> tuple[dict[str, float], dict[str, float], float]:
+    """
+    Compute per-pillar variance and coverage across a set of records.
+
+    For each pillar in _PILLAR_FIELDS, collects all numeric values available
+    across records for each field in that pillar, computes variance per field,
+    then averages to produce a single pillar-level variance value.
+
+    Coverage is the fraction of records that have at least one numeric value
+    for any field in the pillar.
+
+    Returns:
+        pillar_variances: dict[pillar_name, mean_variance] — NaN excluded pillars
+        pillar_coverage:  dict[pillar_name, coverage_fraction]
+        hmoe_4p_base:     mean(available_pillar_variances) — caller multiplies by eff_n
+    """
+    n = len(records)
+    if n == 0:
+        return ({}, {}, 0.0)
+
+    pillar_variances: dict[str, float] = {}
+    pillar_coverage: dict[str, float] = {}
+
+    for pillar, fields in _PILLAR_FIELDS.items():
+        field_variances: list[float] = []
+        records_with_any = 0
+
+        for field_name in fields:
+            values = []
+            for rec in records:
+                val = rec.get(field_name)
+                if isinstance(val, (int, float)) and not math.isnan(float(val)):
+                    values.append(float(val))
+
+            if values:
+                records_with_any = max(records_with_any, len(values))
+                var = statistics.variance(values) if len(values) > 1 else 0.0
+                field_variances.append(var)
+
+        pillar_coverage[pillar] = round(records_with_any / n, 3)
+
+        if field_variances:
+            pillar_variances[pillar] = round(
+                statistics.mean(field_variances), 6
+            )
+        # Pillars with no data are simply absent from pillar_variances.
+
+    available_vars = list(pillar_variances.values())
+    hmoe_4p_base = statistics.mean(available_vars) if available_vars else 0.0
+
+    return pillar_variances, pillar_coverage, hmoe_4p_base
 
 
 def analyse_delta_distribution(tag_name: str) -> DeltaDistribution:
@@ -138,6 +246,7 @@ def analyse_delta_distribution(tag_name: str) -> DeltaDistribution:
             effective_n_mean=1.0, effective_n_max=1.0,
             mean_total_drift=0.0, max_total_drift=0.0,
             hmoe=0.0,
+            pillar_variances={}, pillar_coverage={}, hmoe_4p=0.0,
             calibration_score=0.5,
             calibration_notes=["No records with this tag — cannot assess calibration."],
         )
@@ -192,6 +301,11 @@ def analyse_delta_distribution(tag_name: str) -> DeltaDistribution:
     # High HMoE = k is discriminating AND the corpus is in the living, non-linear regime.
     hmoe = round(residue_variance * eff_n_mean, 6)
 
+    # Four-Pillar HMoE: apply the same logic across all four evidence channels.
+    # Insight requires convergence across pillars, not just depth in one.
+    pillar_variances, pillar_coverage, hmoe_4p_base = _compute_pillar_variances(tagged_records)
+    hmoe_4p = round(hmoe_4p_base * eff_n_mean, 6)
+
     # Calibration assessment
     score, notes = _assess_calibration(
         n=n,
@@ -201,6 +315,8 @@ def analyse_delta_distribution(tag_name: str) -> DeltaDistribution:
         mean_drift=mean_drift,
         eff_n_mean=eff_n_mean,
         n_with_history=n_with_history,
+        pillar_variances=pillar_variances,
+        pillar_coverage=pillar_coverage,
     )
 
     return DeltaDistribution(
@@ -220,6 +336,9 @@ def analyse_delta_distribution(tag_name: str) -> DeltaDistribution:
         mean_total_drift=round(mean_drift, 5),
         max_total_drift=round(max_drift, 5),
         hmoe=hmoe,
+        pillar_variances=pillar_variances,
+        pillar_coverage=pillar_coverage,
+        hmoe_4p=hmoe_4p,
         calibration_score=score,
         calibration_notes=notes,
     )
@@ -233,6 +352,8 @@ def _assess_calibration(
     mean_drift: float,
     eff_n_mean: float,
     n_with_history: int,
+    pillar_variances: dict | None = None,
+    pillar_coverage: dict | None = None,
 ) -> tuple:
     """
     Assess k-calibration health from distribution statistics.
@@ -288,6 +409,31 @@ def _assess_calibration(
             "effective_n near 1.0: corpus is in the linear regime — "
             "records have not yet accumulated fork/confluence history under this tag."
         )
+
+    # Four-Pillar coverage: flag when evidence is single-pillar dominated.
+    # The Spiritual pillar (creative_residue / LSII) is always measured.
+    # If other pillars are missing or near-zero, the analysis is inference-grade,
+    # not insight-grade — it lacks the multi-modal convergence that distinguishes
+    # genuine insight from single-channel pattern recognition.
+    if pillar_variances is not None and pillar_coverage is not None:
+        covered = [p for p, cov in pillar_coverage.items() if cov > 0.0]
+        if len(covered) == 1:
+            score -= 0.10
+            notes.append(
+                f"Single-pillar evidence ({covered[0]} only): analysis is inference-grade. "
+                "Records with somatic, intellectual, or emotional fields will elevate to insight-grade. "
+                "Consider enriching records with full psychosomatic profile data."
+            )
+        elif len(covered) == 2:
+            notes.append(
+                f"Two-pillar evidence ({', '.join(covered)}): partial insight. "
+                "Adding records with full four-pillar field coverage will improve Φ_4p."
+            )
+        elif len(covered) >= 3:
+            notes.append(
+                f"Multi-pillar evidence ({', '.join(covered)}): insight-grade corpus. "
+                "Four-pillar HMoE is active."
+            )
 
     if not notes:
         notes.append("Distribution appears well-calibrated — no systematic bias detected.")
