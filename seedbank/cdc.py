@@ -27,12 +27,17 @@ On the 2-key future:
     here but the hash chain is the prerequisite structure it requires.
 
 Event types:
-    deposit       — a new record was deposited
-    fork          — a record's reading was forked (recompute produced a new universe)
-    confluence    — a confluent reading was produced from multiple prior universes
-    stale_marked  — a record was marked stale due to a tag revision
-    stale_cleared — a stale flag was cleared (by recompute or manual correction)
-    verified      — a record's provenance context was verified by a human
+    deposit            — a new record was deposited
+    fork               — a record's reading was forked (recompute produced a new universe)
+    confluence         — a confluent reading was produced from multiple prior universes
+    historical_marked  — a record was marked historical due to a tag revision
+    historical_cleared — a historical flag was cleared (by recompute or manual correction)
+    verified           — a record's provenance context was verified by a human
+    warning            — runtime/system warning captured as an archival confluence point
+
+Legacy aliases are accepted for compatibility:
+    stale_marked  -> historical_marked
+    stale_cleared -> historical_cleared
 """
 
 import hashlib
@@ -42,6 +47,11 @@ from datetime import datetime, timezone
 from typing import Optional
 
 _CDC_FILE = os.path.join(os.path.dirname(__file__), "events.jsonl")
+
+_EVENT_TYPE_ALIASES = {
+    "stale_marked": "historical_marked",
+    "stale_cleared": "historical_cleared",
+}
 
 
 # ── Write ─────────────────────────────────────────────────────────────────────
@@ -56,7 +66,8 @@ def append_event(
     """
     Append one event to the CDC log.
 
-    event_type: "deposit" | "fork" | "confluence" | "stale_marked" | "stale_cleared" | "verified"
+    event_type: "deposit" | "fork" | "confluence" | "historical_marked" |
+                "historical_cleared" | "verified" | "warning"
     record_id:  the seedbank record UUID this event concerns
     data:       event-specific payload (arbitrary dict, must be JSON-serialisable)
 
@@ -64,11 +75,17 @@ def append_event(
 
     Returns the event dict as written (including chain_hash).
     """
+    canonical_type = _EVENT_TYPE_ALIASES.get(event_type, event_type)
+    event_data = dict(data or {})
+    if canonical_type != event_type:
+        # Preserve the caller's legacy vocabulary while storing one canonical type.
+        event_data.setdefault("legacy_event_type", event_type)
+
     event = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "event_type": event_type,
+        "event_type": canonical_type,
         "record_id": record_id,
-        "data": data,
+        "data": event_data,
     }
 
     # Build the hash chain link.
@@ -130,6 +147,8 @@ def read_events(
     if not os.path.exists(_file):
         return []
 
+    canonical_filter = _EVENT_TYPE_ALIASES.get(event_type, event_type) if event_type else None
+
     results = []
     with open(_file, encoding="utf-8") as fh:
         for line in fh:
@@ -140,7 +159,7 @@ def read_events(
                 event = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            if event_type is not None and event.get("event_type") != event_type:
+            if canonical_filter is not None and event.get("event_type") != canonical_filter:
                 continue
             if record_id is not None and event.get("record_id") != record_id:
                 continue

@@ -17,6 +17,8 @@ import argparse
 import json
 import sys
 import os
+import warnings
+import uuid
 from datetime import datetime
 
 # Add project root to path
@@ -29,6 +31,16 @@ from core.divergence import compute_lsii, compute_trajectory
 from core.fingerprints import analyse_fingerprints
 from core.psychosomatics import build_psychosomatic_profile
 from core.influence_mapper import map_influence_chain
+from seedbank.cdc import append_event
+from seedbank.nanomap import (
+    append_artifact_event,
+    append_kindpress_extraction_state,
+    append_warning_event,
+    build_kindpress_extraction_state,
+    queue_cloud_replication,
+    write_warning_packet,
+    write_kindpress_clone,
+)
 
 
 def analyse_file(filepath: str, full_provenance: bool = False,
@@ -43,125 +55,155 @@ def analyse_file(filepath: str, full_provenance: bool = False,
     print(f"  {filepath}")
     print(f"{'='*60}")
 
+    run_id = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+    append_event("confluence", run_id, {
+        "kind": "analysis_started",
+        "filepath": filepath,
+        "started_at": datetime.now().isoformat(),
+    })
+
+    captured_warnings = []
+    _previous_showwarning = warnings.showwarning
+
+    def _capture_warning(message, category, filename, lineno, file=None, line=None):
+        warning_payload = {
+            "message": str(message),
+            "category": getattr(category, "__name__", str(category)),
+            "filename": filename,
+            "lineno": lineno,
+            "module": os.path.basename(filename) if filename else None,
+        }
+        captured_warnings.append(warning_payload)
+        return _previous_showwarning(message, category, filename, lineno, file=file, line=line)
+
+    warnings.showwarning = _capture_warning
+
     # ── STAGE 1: INGESTION ──────────────────────────────────────
-    record = load(filepath)
-    if record.is_silence:
-        print("ERROR: File appears silent. Aborting.")
-        return {}
+    try:
+        record = load(filepath)
+        if record.is_silence:
+            print("ERROR: File appears silent. Aborting.")
+            append_event("warning", run_id, {
+                "kind": "silent_input",
+                "filepath": filepath,
+                "message": "Input appears silent; analysis aborted.",
+            })
+            return {}
 
     # ── STAGE 2: SEGMENTATION ───────────────────────────────────
-    segments = segment(record)
+        segments = segment(record)
 
     # ── STAGE 3: FEATURE EXTRACTION ─────────────────────────────
-    print(f"\n[FEATURE EXTRACTION]")
-    quarter_features = []
-    for q in segments.quarters:
-        print(f"  Extracting {q.label}...", end=' ', flush=True)
-        features = extract(q, record.sample_rate)
-        quarter_features.append(features)
-        print(f"✓ key:{features.harmonic.key_estimate} "
-              f"tempo:{features.temporal.tempo_bpm:.0f}bpm "
-              f"tension:{features.harmonic.tension_ratio:.2f}")
+        print(f"\n[FEATURE EXTRACTION]")
+        quarter_features = []
+        for q in segments.quarters:
+            print(f"  Extracting {q.label}...", end=' ', flush=True)
+            features = extract(q, record.sample_rate)
+            quarter_features.append(features)
+            print(f"✓ key:{features.harmonic.key_estimate} "
+                  f"tempo:{features.temporal.tempo_bpm:.0f}bpm "
+                  f"tension:{features.harmonic.tension_ratio:.2f}")
 
     # ── STAGE 4: DIVERGENCE / LSII ──────────────────────────────
-    print(f"\n[LATE-SONG INVERSION INDEX]")
-    trajectory = compute_trajectory(quarter_features)
-    lsii = trajectory.lsii_result
+        print(f"\n[LATE-SONG INVERSION INDEX]")
+        trajectory = compute_trajectory(quarter_features)
+        lsii = trajectory.lsii_result
 
-    print(f"  LSII Score   : {lsii.lsii:.4f}  [{lsii.flag_level.upper()}]")
-    print(f"  Direction    : {lsii.direction}")
-    print(f"  Dominant Axis: {lsii.dominant_axis}")
-    print(f"  Trajectory   : {lsii.trajectory_description}")
-    print(f"  Inversion    : {lsii.inversion_description}")
-    print(f"  Flag Notes   : {lsii.flag_notes}")
+        print(f"  LSII Score   : {lsii.lsii:.4f}  [{lsii.flag_level.upper()}]")
+        print(f"  Direction    : {lsii.direction}")
+        print(f"  Dominant Axis: {lsii.dominant_axis}")
+        print(f"  Trajectory   : {lsii.trajectory_description}")
+        print(f"  Inversion    : {lsii.inversion_description}")
+        print(f"  Flag Notes   : {lsii.flag_notes}")
 
     # ── STAGE 5: FINGERPRINTING ──────────────────────────────────
-    print(f"\n[FINGERPRINT ANALYSIS]")
-    q_all_features = quarter_features[0] if quarter_features else None
-    groove_ms = q_all_features.temporal.groove_deviation_ms if q_all_features else None
-    crest_db = q_all_features.dynamic.crest_factor_db if q_all_features else None
-    dynamic_range = q_all_features.dynamic.dynamic_range_db if q_all_features else None
+        print(f"\n[FINGERPRINT ANALYSIS]")
+        q_all_features = quarter_features[0] if quarter_features else None
+        groove_ms = q_all_features.temporal.groove_deviation_ms if q_all_features else None
+        crest_db = q_all_features.dynamic.crest_factor_db if q_all_features else None
+        dynamic_range = q_all_features.dynamic.dynamic_range_db if q_all_features else None
 
-    fingerprints = analyse_fingerprints(
-        record,
-        groove_deviation_ms=groove_ms,
-        crest_factor_db=crest_db,
-        dynamic_range_db=dynamic_range,
-    )
+        fingerprints = analyse_fingerprints(
+            record,
+            groove_deviation_ms=groove_ms,
+            crest_factor_db=crest_db,
+            dynamic_range_db=dynamic_range,
+        )
 
-    print(f"  Production   : {fingerprints.production_context}")
-    if fingerprints.likely_era:
-        print(f"  Era Matches  : {', '.join([f'{m.name}({m.confidence:.2f})' for m in fingerprints.likely_era[:2]])}")
-    if fingerprints.likely_techniques:
-        for t in fingerprints.likely_techniques[:3]:
-            print(f"  Technique    : {t.name} (confidence: {t.confidence:.2f})")
-    if fingerprints.authenticity_markers:
-        print(f"  Authenticity : {'; '.join(fingerprints.authenticity_markers[:2])}")
-    if fingerprints.manufacturing_markers:
-        print(f"  ⚠ Manufacture: {'; '.join(fingerprints.manufacturing_markers)}")
+        print(f"  Production   : {fingerprints.production_context}")
+        if fingerprints.likely_era:
+            print(f"  Era Matches  : {', '.join([f'{m.name}({m.confidence:.2f})' for m in fingerprints.likely_era[:2]])}")
+        if fingerprints.likely_techniques:
+            for t in fingerprints.likely_techniques[:3]:
+                print(f"  Technique    : {t.name} (confidence: {t.confidence:.2f})")
+        if fingerprints.authenticity_markers:
+            print(f"  Authenticity : {'; '.join(fingerprints.authenticity_markers[:2])}")
+        if fingerprints.manufacturing_markers:
+            print(f"  ⚠ Manufacture: {'; '.join(fingerprints.manufacturing_markers)}")
 
     # Pull solfeggio_alignment from the first quarter's feature set.
     # feature_extractor.py calls compute_solfeggio_alignment internally,
     # so this is always available when features were extracted successfully.
-    solfeggio_alignment = None
-    if quarter_features and hasattr(quarter_features[0], 'solfeggio_alignment'):
-        solfeggio_alignment = quarter_features[0].solfeggio_alignment
+        solfeggio_alignment = None
+        if quarter_features and hasattr(quarter_features[0], 'solfeggio_alignment'):
+            solfeggio_alignment = quarter_features[0].solfeggio_alignment
 
     # ── STAGE 6: PSYCHOSOMATIC PROFILE ──────────────────────────
-    psycho = build_psychosomatic_profile(
-        trajectory=trajectory,
-        fingerprints=fingerprints,
-        solfeggio_alignment=solfeggio_alignment,
-    )
+        psycho = build_psychosomatic_profile(
+            trajectory=trajectory,
+            fingerprints=fingerprints,
+            solfeggio_alignment=solfeggio_alignment,
+        )
 
-    print(f"\n[PSYCHOSOMATIC PROFILE]")
-    print(f"  Valence Arc  : {' → '.join([f'{v:.2f}' for v in trajectory.valence_arc])}")
-    print(f"  Energy Arc   : {' → '.join([f'{v:.2f}' for v in trajectory.energy_arc])}")
-    print(f"  Complexity   : {' → '.join([f'{v:.2f}' for v in trajectory.complexity_arc])}")
-    print(f"  Tension Arc  : {' → '.join([f'{v:.2f}' for v in trajectory.tension_arc])}")
-    print(f"  Coherence    : {' → '.join([f'{v:.2f}' for v in trajectory.coherence_arc])}")
-    print(f"  Authentic    : {psycho.authentic_emission_score:.2f}  "
-          f"Manufactured: {psycho.manufacturing_score:.2f}  "
-          f"Residue: {psycho.creative_residue:.2f}")
-    if psycho.stage1_priming_detected:
-        print(f"  ⚠ Stage 1 Priming Detected")
-    if psycho.stage2_prestige_attached:
-        print(f"  ⚠ Stage 2 Prestige Attached")
+        print(f"\n[PSYCHOSOMATIC PROFILE]")
+        print(f"  Valence Arc  : {' → '.join([f'{v:.2f}' for v in trajectory.valence_arc])}")
+        print(f"  Energy Arc   : {' → '.join([f'{v:.2f}' for v in trajectory.energy_arc])}")
+        print(f"  Complexity   : {' → '.join([f'{v:.2f}' for v in trajectory.complexity_arc])}")
+        print(f"  Tension Arc  : {' → '.join([f'{v:.2f}' for v in trajectory.tension_arc])}")
+        print(f"  Coherence    : {' → '.join([f'{v:.2f}' for v in trajectory.coherence_arc])}")
+        print(f"  Authentic    : {psycho.authentic_emission_score:.2f}  "
+              f"Manufactured: {psycho.manufacturing_score:.2f}  "
+              f"Residue: {psycho.creative_residue:.2f}")
+        if psycho.stage1_priming_detected:
+            print(f"  ⚠ Stage 1 Priming Detected")
+        if psycho.stage2_prestige_attached:
+            print(f"  ⚠ Stage 2 Prestige Attached")
 
-    print(f"\n[ELDER'S READING]")
-    # Wrap at 72 chars for terminal readability
-    elder_text = psycho.elder_reading
-    for i in range(0, len(elder_text), 72):
-        print(f"  {elder_text[i:i+72]}")
+        print(f"\n[ELDER'S READING]")
+        # Wrap at 72 chars for terminal readability
+        elder_text = psycho.elder_reading
+        for i in range(0, len(elder_text), 72):
+            print(f"  {elder_text[i:i+72]}")
 
     # ── STAGE 7: INFLUENCE CHAIN ─────────────────────────────────
-    print(f"\n[INFLUENCE CHAIN]")
-    influence_chain = map_influence_chain(
-        fingerprints=fingerprints,
-        features=quarter_features[0] if quarter_features else None,
-        manufacturing_score=psycho.manufacturing_score,
-        authentic_emission_score=psycho.authentic_emission_score,
-        lsii_score=lsii.lsii,
-    )
-    if influence_chain.primary_lineage:
-        for node in influence_chain.primary_lineage[:2]:
-            print(f"  {node.name} ({node.era_range[0]}–{node.era_range[1]}) "
-                  f"conf={node.confidence:.2f}")
-    print(f"  Mechanic Dir : {influence_chain.mechanic_direction}")
-    print(f"  Stage Est.   : {influence_chain.gradient_stage_estimate}")
-    if influence_chain.syntropy_repair_vectors:
-        print(f"  Repair Vector: {influence_chain.syntropy_repair_vectors[0][:60]}")
+        print(f"\n[INFLUENCE CHAIN]")
+        influence_chain = map_influence_chain(
+            fingerprints=fingerprints,
+            features=quarter_features[0] if quarter_features else None,
+            manufacturing_score=psycho.manufacturing_score,
+            authentic_emission_score=psycho.authentic_emission_score,
+            lsii_score=lsii.lsii,
+        )
+        if influence_chain.primary_lineage:
+            for node in influence_chain.primary_lineage[:2]:
+                print(f"  {node.name} ({node.era_range[0]}–{node.era_range[1]}) "
+                      f"conf={node.confidence:.2f}")
+        print(f"  Mechanic Dir : {influence_chain.mechanic_direction}")
+        print(f"  Stage Est.   : {influence_chain.gradient_stage_estimate}")
+        if influence_chain.syntropy_repair_vectors:
+            print(f"  Repair Vector: {influence_chain.syntropy_repair_vectors[0][:60]}")
 
     # ── ASSEMBLE PROFILE ─────────────────────────────────────────
-    profile = {
-        "metadata": {
-            "analysed_at": datetime.now().isoformat(),
-            "tool": "KindPath Creative Analyser v0.2",
-            "filepath": filepath,
-            "filename": record.filename,
-            "duration_seconds": record.duration_seconds,
-            "sample_rate": record.sample_rate,
-        },
+        profile = {
+            "metadata": {
+                "analysed_at": datetime.now().isoformat(),
+                "tool": "KindPath Creative Analyser v0.2",
+                "analysis_run_id": run_id,
+                "filepath": filepath,
+                "filename": record.filename,
+                "duration_seconds": record.duration_seconds,
+                "sample_rate": record.sample_rate,
+            },
         "audio_health": {
             "peak_db": float(20 * __import__('numpy').log10(record.peak_amplitude + 1e-10)),
             "dynamic_range_db": record.dynamic_range_db,
@@ -249,31 +291,79 @@ def analyse_file(filepath: str, full_provenance: bool = False,
         },
     }
 
-    if full_provenance:
-        profile["quarter_features"] = [
-            qf.to_dict() for qf in quarter_features if qf
-        ]
+        if full_provenance:
+            profile["quarter_features"] = [
+                qf.to_dict() for qf in quarter_features if qf
+            ]
 
     # ── HTML REPORT ──────────────────────────────────────────────
-    if html_output:
-        try:
-            from reports.report_generator import generate_html_report
-            html = generate_html_report(
-                record=record,
-                trajectory=trajectory,
-                fingerprints=fingerprints,
-                psychosomatic=psycho,
-                output_path=html_output,
-            )
-            print(f"\n[HTML REPORT] Saved to {html_output}")
-        except ImportError:
-            print("[HTML REPORT] report_generator not available — skipping")
+        if html_output:
+            try:
+                from reports.report_generator import generate_html_report
+                html = generate_html_report(
+                    record=record,
+                    trajectory=trajectory,
+                    fingerprints=fingerprints,
+                    psychosomatic=psycho,
+                    output_path=html_output,
+                )
+                print(f"\n[HTML REPORT] Saved to {html_output}")
+            except ImportError:
+                print("[HTML REPORT] report_generator not available — skipping")
 
     # ── DEPOSIT TO SEEDBANK ──────────────────────────────────────
-    if deposit:
-        _deposit_to_seedbank(profile, context)
+        if deposit:
+            _deposit_to_seedbank(profile, context)
 
-    return profile
+        # First in chain: extract the profile into KindPress clone artifacts.
+        clone_meta = write_kindpress_clone(run_id, profile)
+
+        # First in chain for warnings: extract + fingerprint before CDC warning event.
+        warning_fingerprints = []
+        for i, w in enumerate(captured_warnings, start=1):
+            warning_fp = write_warning_packet(run_id, w, i)
+            warning_fingerprints.append(warning_fp)
+            queue_cloud_replication(run_id, "warning_raw", warning_fp["raw_sha256"], warning_fp["raw_path"])
+            queue_cloud_replication(run_id, "warning_kindpress_packet", warning_fp["packet_sha256"], warning_fp["packet_path"])
+            append_warning_event(
+                run_id=run_id,
+                message=w.get("message", ""),
+                category=w.get("category", "Warning"),
+                filename=w.get("filename"),
+                lineno=w.get("lineno"),
+                module=w.get("module"),
+                fingerprint={
+                    "raw_sha256": warning_fp["raw_sha256"],
+                    "packet_sha256": warning_fp["packet_sha256"],
+                    "packet_hash": warning_fp["packet_hash"],
+                    "raw_path": warning_fp["raw_path"],
+                    "packet_path": warning_fp["packet_path"],
+                },
+            )
+
+        extraction_state = build_kindpress_extraction_state(
+            run_id=run_id,
+            profile=profile,
+            clone_meta=clone_meta,
+            warning_fingerprints=warning_fingerprints,
+        )
+        append_kindpress_extraction_state(run_id, extraction_state)
+        profile.setdefault("metadata", {})["kindpress_extraction_state"] = extraction_state
+
+        # Cryptographic local artifact tracking + cloud replication queue.
+        profile_event = append_artifact_event(run_id, "analysis_profile", payload=profile)
+        queue_cloud_replication(
+            run_id,
+            "analysis_profile",
+            profile_event["data"]["sha256"],
+            "in-memory:analysis_profile",
+        )
+        print(f"\n[NANOMAP] Logged run_id={run_id}")
+        print(f"  KindPress clone: {clone_meta['packet_path']}")
+
+        return profile
+    finally:
+        warnings.showwarning = _previous_showwarning
 
 
 def _deposit_to_seedbank(profile: dict, context: str):
@@ -471,6 +561,15 @@ Examples:
             with open(args.output, 'w') as f:
                 json.dump(profile, f, indent=2)
             print(f"\n[OUTPUT] Profile saved to {args.output}")
+            run_id = profile.get("metadata", {}).get("analysis_run_id", "unknown")
+            output_event = append_artifact_event(run_id, "output_json", file_path=args.output)
+            queue_cloud_replication(
+                run_id,
+                "output_json",
+                output_event["data"]["sha256"],
+                args.output,
+            )
+            print(f"[NANOMAP] Output sha256: {output_event['data']['sha256'][:16]}…")
         else:
             print(f"\n[PROFILE SUMMARY]")
             influence = profile.get('influence_chain', {})

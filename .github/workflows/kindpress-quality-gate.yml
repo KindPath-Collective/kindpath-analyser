@@ -1,0 +1,47 @@
+name: KindPress Quality Gate
+
+on:
+  push:
+    paths:
+      - "kindpress/**"
+      - "seedbank/**"
+      - "analyse.py"
+      - "tests/test_kindpress*.py"
+      - "tests/test_self_correction.py"
+      - ".github/workflows/kindpress-quality-gate.yml"
+  pull_request:
+    paths:
+      - "kindpress/**"
+      - "seedbank/**"
+      - "analyse.py"
+      - "tests/test_kindpress*.py"
+      - "tests/test_self_correction.py"
+      - ".github/workflows/kindpress-quality-gate.yml"
+
+jobs:
+  kindpress-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run KindPress lane
+        run: |
+          pytest \
+            tests/test_kindpress.py \
+            tests/test_kindpress_transport_pipeline.py \
+            tests/test_kindpress_nanomap_integrity.py \
+            tests/test_self_correction.py \
+            -q --tb=short

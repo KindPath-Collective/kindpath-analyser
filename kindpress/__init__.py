@@ -82,8 +82,30 @@ Import paths:
     from kindpress.press import encode, decode, KindPressPacket, k_alignment_check
     from kindpress.reason import analyse_delta_distribution, k_calibration_score
     from kindpress.validate import validate_tag_revision, TagRevisionReport
+    from kindpress.self_correction import build_correction_lattice, run_self_correction
+    from kindpress.constants_engine import scan_constants, derive_constants_key_material
 
 See kindpath-canon/FREQUENCY_FIELD_ARCHITECTURE.md for the full theoretical
 framework including KindPress as therapeutic instrument.
 See kindpath-canon/CONSCIOUS_CONTEXTUALISATION.md for the earlier k/Δ foundation.
 """
+
+from .constants_engine import (
+    COMMUNITY_ERROR_CORRECTION_LAWS,
+    ConstantSignal,
+    ConstantsSnapshot,
+    ScanConfig,
+    derive_constants_key_material,
+    save_snapshot,
+    scan_constants,
+)
+
+__all__ = [
+    "COMMUNITY_ERROR_CORRECTION_LAWS",
+    "ConstantSignal",
+    "ConstantsSnapshot",
+    "ScanConfig",
+    "derive_constants_key_material",
+    "save_snapshot",
+    "scan_constants",
+]

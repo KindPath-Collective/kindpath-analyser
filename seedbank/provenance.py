@@ -70,6 +70,11 @@ def record_provenance(record_id: str) -> dict:
     cdc_events = get_events_for_record(record_id)
     chain_result = verify_chain()
     integrity = _check_integrity(record, cdc_events, chain_result)
+    extraction_events = [
+        e for e in cdc_events
+        if e.get("event_type") == "confluence"
+        and e.get("data", {}).get("kind") == "kindpress_extraction_state"
+    ]
 
     bundle: dict = {
         "record_id": record_id,
@@ -78,6 +83,8 @@ def record_provenance(record_id: str) -> dict:
         "reading_count": len(record.get("reading_history", [])),
         "reading_history": record.get("reading_history", []),
         "cdc_events": cdc_events,
+        "kindpress_extraction_events": extraction_events,
+        "kindpress_extraction_event_count": len(extraction_events),
         "cdc_chain_ok": chain_result["ok"],
         "cdc_chain_events_total": chain_result["events_verified"],
         "integrity_issues": integrity["issues"],

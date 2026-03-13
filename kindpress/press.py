@@ -240,7 +240,7 @@ def k_alignment_check(
         recommendation = (
             f"{len(drifted)} tag(s) have drifted: {', '.join(drifted)}. "
             "Decode will produce a record encoded under the packet's k, not the "
-            "receiver's current k. Consider recomputing stale records before using "
+            "receiver's current k. Consider recomputing historical records before using "
             "the decoded values as current-universe readings."
         )
 
